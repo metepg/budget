@@ -1,0 +1,24 @@
+# Server
+server/target
+
+# Client
+client/npm-debug.log
+client/yarn-error.log
+client/node_modules
+client/client/dist
+
+client/.angular/cache
+client/.sass-cache/
+client/connect.lock
+client/coverage
+client/libpeerconnection.log
+clienttestem.log
+client/typings
+client/dist
+client/tmp
+client/out-tsc
+client/bazel-out
+
+# Misc.
+.idea/
+target/
