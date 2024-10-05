@@ -1,4 +1,4 @@
-package com.metepg.app.model;
+package com.metepg.defaultAppName.model;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DB_NAME="app"
+DB_NAME="defaultAppName"
 PGPASSWORD="postgres" # Replace with your actual PostgreSQL password
 PGPASSWORD="postgres" # Replace with your actual PostgreSQL password
 

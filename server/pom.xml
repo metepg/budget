@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.metepg</groupId>
-    <artifactId>app-name</artifactId>
+    <artifactId>defaultAppName</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>app-name</name>
+    <name>defaultAppName</name>
     <description>App name description</description>
     <properties>
         <java.version>21</java.version>
