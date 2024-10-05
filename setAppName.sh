@@ -10,8 +10,8 @@ TEST_DIR="server/src/test/java/com/metepg"
 RESOURCES_DIR="server/src/main/resources"
 CLIENT_DIR="client"
 
-# File types to search in (without *.properties to avoid modifying them)
-FILE_TYPES=("*.xml" "*.ts" "*.yml" "*.html" "*.js" "*.java")
+# File types to search in (excluding *.properties and *.java to avoid touching packages)
+FILE_TYPES=("*.xml" "*.ts" "*.yml" "*.html" "*.js")
 
 # Full package names for replacement in Java files
 OLD_PACKAGE="com.metepg.$CURRENT_APP_NAME"
@@ -54,25 +54,29 @@ fi
 for dir in "$SERVER_DIR" "$TEST_DIR"; do
   if [[ -d "$dir" ]]; then
     find "$dir" -type f -name "*.java" -not -path "*/target/*" -not -path "*/.*" | while read -r file; do
+      # Replace package declaration in Java files
       $SED_CMD "s|package $OLD_PACKAGE|package $NEW_PACKAGE|g" "$file"
       echo "Updated package declaration in: $file"
     done
   fi
 done
 
-# Step 3: Replace app name in other files in both server and client (for non-Java files), including resources
+# Step 3: Replace app name in non-Java files, but do NOT modify package names or paths
 for dir in "$SERVER_DIR" "$CLIENT_DIR" "$RESOURCES_DIR"; do
   if [[ -d "$dir" ]]; then
     for file_type in "${FILE_TYPES[@]}"; do
+      # Process only non-Java files, ensuring no package path modifications
       if [[ "$dir" == "$CLIENT_DIR" ]]; then
         # Exclude node_modules in client, and hidden directories
         find "$dir" -type f -name "$file_type" -not -path "*/node_modules/*" -not -path "*/.*" | while read -r file; do
+          # Only update the app name, do not modify paths or package names
           $SED_CMD "s/$CURRENT_APP_NAME/$NEW_APP_NAME/g" "$file"
           echo "Updated app name in file: $file"
         done
       else
         # Exclude target in server, and hidden directories
-        find "$dir" -type f -name "$file_type" -not -path "$SERVER_DIR/target/*" -not -path "*/.*" | while read -r file; do
+        find "$dir" -type f -name "$file_type" -not -path "$SERVER_DIR/target/*" -not -path "*/.*" -not -path "*.java" | while read -r file; do
+          # Only replace the app name, without modifying package paths
           $SED_CMD "s/$CURRENT_APP_NAME/$NEW_APP_NAME/g" "$file"
           echo "Updated app name in file: $file"
         done
@@ -98,4 +102,4 @@ else
   exit 1
 fi
 
-echo "App name replaced from '$CURRENT_APP_NAME' to '$NEW_APP_NAME' in files and package structure."
+echo "App name replaced in application-dev.properties from '$CURRENT_APP_NAME' to '$NEW_APP_NAME'."
