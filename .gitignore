@@ -1,5 +1,6 @@
 # Server
 server/target
+server/src/main/resources/application-dev.properties
 
 # Client
 client/npm-debug.log

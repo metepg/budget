@@ -10,8 +10,8 @@ TEST_DIR="server/src/test/java/com/metepg"
 RESOURCES_DIR="server/src/main/resources"
 CLIENT_DIR="client"
 
-# File types to search in
-FILE_TYPES=("*.xml" "*.ts" "*.yml" "*.properties" "*.html" "*.js" "*.java")
+# File types to search in (without *.properties to avoid modifying them)
+FILE_TYPES=("*.xml" "*.ts" "*.yml" "*.html" "*.js" "*.java")
 
 # Full package names for replacement in Java files
 OLD_PACKAGE="com.metepg.$CURRENT_APP_NAME"
@@ -51,11 +51,9 @@ if [[ -d "$TEST_DIR/$CURRENT_APP_NAME" ]]; then
 fi
 
 # Step 2: Update the package declarations inside Java files after renaming the folders
-# This will update the `package` declaration in Java files to match the new directory structure
 for dir in "$SERVER_DIR" "$TEST_DIR"; do
   if [[ -d "$dir" ]]; then
     find "$dir" -type f -name "*.java" -not -path "*/target/*" -not -path "*/.*" | while read -r file; do
-      # Update the package declaration in the Java files
       $SED_CMD "s|package $OLD_PACKAGE|package $NEW_PACKAGE|g" "$file"
       echo "Updated package declaration in: $file"
     done
@@ -82,5 +80,22 @@ for dir in "$SERVER_DIR" "$CLIENT_DIR" "$RESOURCES_DIR"; do
     done
   fi
 done
+
+# Step 4: Only modify application-dev.properties without touching application.properties
+APPLICATION_PROPERTIES="$RESOURCES_DIR/application.properties"
+DEV_PROPERTIES="$RESOURCES_DIR/application-dev.properties"
+
+if [[ -f "$APPLICATION_PROPERTIES" ]]; then
+  # Copy the content of application.properties to application-dev.properties
+  cp "$APPLICATION_PROPERTIES" "$DEV_PROPERTIES"
+
+  # Update only the application-dev.properties file to change the app name
+  $SED_CMD "s/$CURRENT_APP_NAME/$NEW_APP_NAME/g" "$DEV_PROPERTIES"
+
+  echo "Created $DEV_PROPERTIES with updated app name."
+else
+  echo "Error: $APPLICATION_PROPERTIES was not found."
+  exit 1
+fi
 
 echo "App name replaced from '$CURRENT_APP_NAME' to '$NEW_APP_NAME' in files and package structure."
