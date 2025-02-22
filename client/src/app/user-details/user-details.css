@@ -1,0 +1,14 @@
+.form-container {
+  display: flex;
+  justify-content: center;
+  height: 100vh;
+  padding: 1rem;
+}
+
+.form-content {
+  padding: 2rem 0;
+}
+
+.form-field {
+  margin-bottom: 1rem;
+}

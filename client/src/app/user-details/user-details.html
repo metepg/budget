@@ -1,1 +1,44 @@
-<p>Working</p>
+<div class="form-container">
+  <p-card header="Alkutiedot">
+    <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="p-fluid form-content">
+
+      <p-float-label variant="in" class="form-field">
+        <p-inputNumber
+          id="netIncome"
+          formControlName="netIncome"
+          inputId="netIncome"
+          locale="fi"
+          [mode]="'decimal'"
+          [maxFractionDigits]="2">
+        </p-inputNumber>
+        <label for="netIncome">Nettotulot / kk</label>
+      </p-float-label>
+
+      <p-float-label variant="in" class="form-field">
+        <p-inputNumber
+          id="otherIncome"
+          formControlName="otherIncome"
+          inputId="otherIncome"
+          locale="fi"
+          [mode]="'decimal'"
+          [maxFractionDigits]="2">
+        </p-inputNumber>
+        <label for="otherIncome">Muut tulot / kk</label>
+      </p-float-label>
+
+      <p-float-label variant="in" class="form-field">
+        <p-inputNumber
+          id="savingsGoal"
+          formControlName="savingsGoal"
+          inputId="savingsGoal"
+          locale="fi"
+          [mode]="'decimal'"
+          [maxFractionDigits]="2">
+        </p-inputNumber>
+        <label for="savingsGoal">Säästötavoite</label>
+      </p-float-label>
+
+      <p-button type="submit" label="Tallenna" [disabled]="userForm.invalid"></p-button>
+    </form>
+  </p-card>
+</div>
