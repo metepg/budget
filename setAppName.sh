@@ -2,7 +2,7 @@
 
 # Variables for current and new app name
 CURRENT_APP_NAME="defaultAppName"
-NEW_APP_NAME="hours"
+NEW_APP_NAME="budget"
 
 # Directories for server, test, resources, and client
 SERVER_DIR="server/src/main/java/com/metepg"
@@ -84,6 +84,15 @@ for dir in "$SERVER_DIR" "$CLIENT_DIR" "$RESOURCES_DIR"; do
     done
   fi
 done
+
+# Explicitly process server/pom.xml
+POM_FILE="server/pom.xml"
+if [[ -f "$POM_FILE" ]]; then
+  $SED_CMD "s/$CURRENT_APP_NAME/$NEW_APP_NAME/g" "$POM_FILE"
+  echo "Updated app name in file: $POM_FILE"
+else
+  echo "pom.xml not found in $SERVER_DIR"
+fi
 
 # Step 4: Only modify application-dev.properties without touching application.properties
 APPLICATION_PROPERTIES="$RESOURCES_DIR/application.properties"

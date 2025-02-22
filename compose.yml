@@ -1,0 +1,16 @@
+services:
+  budget-database:
+    image: postgres:17-alpine
+    container_name: budget-database
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: budget
+    ports:
+      - "5435:5432"
+    volumes:
+      - budget_db_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+
+volumes:
+  budget_db_data:
