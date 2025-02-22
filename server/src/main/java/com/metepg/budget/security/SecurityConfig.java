@@ -1,4 +1,4 @@
-package com.metepg.defaultAppName.security;
+package com.metepg.budget.security;
 
 import org.springframework.beans.factory.annotation.Value;
 

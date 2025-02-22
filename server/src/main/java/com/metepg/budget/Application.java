@@ -1,4 +1,4 @@
-package com.metepg.defaultAppName;
+package com.metepg.budget;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
