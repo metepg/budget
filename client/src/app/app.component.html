@@ -7,15 +7,20 @@
   }
 </style>
 
-<main class="main">
-  <div class="content">
-    <h1>Backend connection status:
-      @if (isConnected()) {
-        <span class="text-success">connected</span>
-      } @else {
-        <span class="text-danger">not connected</span>
-      }
-    </h1>
-  </div>
-</main>
+@if (isFirstLogin()) {
+  <app-user-details></app-user-details>
+
+} @else {
+  <main class="main">
+    <div class="content">
+      <h1>Backend connection status:
+        @if (isConnected()) {
+          <span class="text-success">connected</span>
+        } @else {
+          <span class="text-danger">not connected</span>
+        }
+      </h1>
+    </div>
+  </main>
+}
 <router-outlet />

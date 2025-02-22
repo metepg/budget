@@ -1,18 +1,19 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { TestConnectionService } from './test-service.service';
-import { AsyncPipe, NgClass, NgIf } from '@angular/common';
+import { UserDetails } from './user-details/user-details';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [AsyncPipe, NgClass, NgIf, RouterOutlet],
+  imports: [RouterOutlet, UserDetails],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 
 export class AppComponent implements OnInit {
 
+  isFirstLogin = signal(true)
   isConnected = signal(false);
 
   constructor(private superService: TestConnectionService) {
