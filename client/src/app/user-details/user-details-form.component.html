@@ -35,10 +35,10 @@
           [mode]="'decimal'"
           [maxFractionDigits]="2">
         </p-inputNumber>
-        <label for="savingsGoal">Säästötavoite</label>
+        <label for="savingsGoal">Säästötavoite / kk</label>
       </p-float-label>
 
-      <p-button type="submit" label="Tallenna" [disabled]="userForm.invalid"></p-button>
+      <p-button type="submit" label="Tallenna" severity="primary" [raised]="true" [disabled]="userForm.invalid"></p-button>
     </form>
   </p-card>
 </div>

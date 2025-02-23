@@ -14,9 +14,6 @@ import lombok.Data;
 public class Authority {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @Column(name = "username", nullable = false)
     private String username;
 

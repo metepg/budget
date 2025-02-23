@@ -1,26 +1,12 @@
-<style>
-  .text-success {
-    color: #228B22;
-  }
-  .text-danger {
-    color: #D32F2F;
-  }
-</style>
-
-@if (isFirstLogin()) {
-  <app-user-details></app-user-details>
-
-} @else {
-  <main class="main">
-    <div class="content">
-      <h1>Backend connection status:
-        @if (isConnected()) {
-          <span class="text-success">connected</span>
-        } @else {
-          <span class="text-danger">not connected</span>
-        }
-      </h1>
-    </div>
-  </main>
+@if (isFirstLogin() != null) {
+  @if (isFirstLogin()) {
+    <app-user-details
+      [user]="user()"
+      (firstLoginComplete)="onFirstLoginComplete()">
+    </app-user-details>
+  } @else {
+    <main class="main">
+    <app-navbar></app-navbar>
+    <router-outlet></router-outlet>
+  </main>}
 }
-<router-outlet />
