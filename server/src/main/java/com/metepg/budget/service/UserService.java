@@ -1,9 +1,9 @@
 package com.metepg.budget.service;
 
-import com.metepg.budget.dto.IncomeResponseDTO;
+import com.metepg.budget.dto.MonthlyRecordResponseDTO;
 import com.metepg.budget.dto.UserResponseDTO;
 import com.metepg.budget.model.User;
-import com.metepg.budget.repository.IncomeRepository;
+import com.metepg.budget.repository.MonthlyRecordRepository;
 import com.metepg.budget.repository.UserRepositoryJPA;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepositoryJPA userRepositoryJPA;
-    private final IncomeRepository incomeRepository;
+    private final MonthlyRecordRepository monthlyRecordRepository;
 
     public Optional<UserResponseDTO> getCurrentUser(org.springframework.security.core.userdetails.UserDetails  userDetails) {
         if (userDetails == null) {
@@ -26,8 +26,8 @@ public class UserService {
 
         return user.map(u -> new UserResponseDTO(
                 u.getUsername(),
-                incomeRepository.findLatestByUsername(u.getUsername())
-                        .map(IncomeResponseDTO::new)
+                monthlyRecordRepository.findLatestByUsername(u.getUsername())
+                        .map(MonthlyRecordResponseDTO::new)
                         .orElse(null),
                 u.isEnabled()
         ));

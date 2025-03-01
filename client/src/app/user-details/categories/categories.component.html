@@ -1,0 +1,44 @@
+<p-button
+  [style]="{ 'margin-bottom': '10px' }"
+  label="Tallenna kategoriat"
+  [disabled]="!isDirty"
+  severity="primary"
+  (click)="save()"
+  [raised]="true"
+  pTooltip="Täytä kategorian kuvaus tai poista tyhjä kategoria"
+  tooltipPosition="top"
+  size="small">
+</p-button>
+
+<p-orderList
+  [value]="categories"
+  [dragdrop]="true"
+  [listStyle]="{ 'max-height': '100vh' }"
+  (onReorder)="onCategoriesReorder($event)">
+  <ng-template let-category let-i="index" pTemplate="item">
+    <div class="category-item">
+      <span class="index">{{ i + 1 }}.</span>
+      <input
+        pInputText
+        [(ngModel)]="category.description"
+        placeholder="Kategorian nimi"
+        (keydown)="$event.stopPropagation()"
+        (keyup)="$event.stopPropagation()"/>
+      <p-button
+        severity="danger"
+        rounded="true"
+        text="true"
+        label=""
+        icon="pi pi-times"
+        (click)="removeCategory(i)">
+      </p-button>
+    </div>
+  </ng-template>
+</p-orderList>
+<p-button
+  [style]="{ 'margin': '8px', 'padding': '8px' }"
+  (click)="addCategory()"
+  variant="text"
+  label="+ Lisää kategoria"
+  severity="contrast">
+</p-button>

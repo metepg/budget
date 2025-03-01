@@ -1,0 +1,36 @@
+import { Injectable } from '@angular/core';
+import { User } from '../../models/User';
+import { Category } from '../../models/Category';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class LocalStorageService {
+
+  setUser(user: User) {
+    localStorage.setItem('user', JSON.stringify(user))
+  }
+
+  getUser(): User | null {
+    const userFromStorage = localStorage.getItem('user');
+    if (!userFromStorage) {
+      return null;
+    } else {
+      return JSON.parse(userFromStorage);
+    }
+  }
+  
+  setCategories(categories: Category[]) {
+    localStorage.setItem('categories', JSON.stringify(categories))
+  }
+
+  getCategories(): Category[] | null {
+    const categoriesFromStorage = localStorage.getItem('categories');
+    if (!categoriesFromStorage) {
+      return null;
+    } else {
+      return JSON.parse(categoriesFromStorage);
+    }
+  }
+  
+}

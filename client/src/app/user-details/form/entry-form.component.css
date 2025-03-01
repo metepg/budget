@@ -1,0 +1,38 @@
+.compact-table table {
+  table-layout: auto;
+  width: 100%;
+}
+
+.compact-input ::ng-deep input {
+  width: 100%;
+  font-size: 14px;
+}
+
+.compact-input {
+  width: 100%;
+  font-size: 14px;
+  min-width: 140px;
+}
+
+.compact-input2 {
+  width: 100%;
+  font-size: 14px;
+  min-width: 40px;
+}
+
+.compact-input2 ::ng-deep input {
+  width: 100%;
+  font-size: 14px;
+  min-width: 50px;
+}
+
+
+.compact-button {
+  padding: 28px !important;
+  height: 24px !important;
+}
+
+td {
+  padding: 8px 2px !important;
+  text-align: center !important;
+}

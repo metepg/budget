@@ -1,0 +1,62 @@
+<form [formGroup]="entryForm" (ngSubmit)="save()" style="max-width: 500px">
+  <p-button
+    [style]="{ 'margin-bottom': '10px'}"
+    (onClick)="save()"
+    [label]="saveBtnLabel"
+    severity="primary"
+    [raised]="true"
+    [disabled]="!isDirty"
+    pTooltip="Täytä kuvaus ja määrä tai poista tyhjä rivi"
+    size="small">
+  </p-button>
+  <p-table [value]="entryControls.controls" class="compact-table">
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 50px;">Kuvaus</th>
+        <th style="width: 30px;">Määrä</th>
+        <th style="width: 10px;">PVM</th>
+        <th style="max-width: 10px; text-align: center"></th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-row let-i="rowIndex">
+      <tr [formGroup]="entryControls.at(i)">
+        <td>
+          <input
+            pInputText
+            type="text"
+            placeholder="Kuvaus"
+            formControlName="description"
+            class="compact-input"/>
+        </td>
+        <td>
+          <p-inputNumber
+            placeholder="Määrä"
+            formControlName="amount"
+            class="compact-input2">
+          </p-inputNumber>
+        </td>
+        <td style="">12.</td>
+        <td style="width: 10px; text-align: center;">
+            <p-button
+              [style]=""
+              type="button"
+              icon="pi pi-pen-to-square"
+              text="true"
+              severity="contrast"
+              (click)="edit(i)">
+            </p-button>
+<!--            <p-button-->
+<!--              type="button"-->
+<!--              icon="pi pi-times"-->
+<!--              text="true"-->
+<!--              severity="danger"-->
+<!--              (click)="removeEntry(i)">-->
+<!--            </p-button>-->
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-button [style]="{ 'margin': '8px', 'padding': '8px' }" (click)="addEntry()" variant="text" [label]="btnLabel" severity="contrast"></p-button>
+</form>
+

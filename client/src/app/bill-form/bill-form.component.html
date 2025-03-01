@@ -1,0 +1,110 @@
+<main style="display: flex; justify-content: center">
+  <p-card [style.margin-top]="'3vh'">
+    <h2>Lisää tapahtuma</h2>
+    <form (ngSubmit)="onSubmit()" [formGroup]="billFormBuilder">
+      <p-select-button
+        [options]="transactionTypeOptions"
+        formControlName="transactionType"
+        optionLabel="label"
+        optionValue="value">
+      </p-select-button>
+
+      <br/>
+      <br/>
+      <label for="date">Päivämäärä</label>
+      <br/>
+      <p-date-picker
+        appendTo="body"
+        size="small"
+        id="date"
+        dateFormat="dd.mm.yy"
+        [defaultDate]="today"
+        formControlName="date"
+        [showIcon]="true"/>
+
+      <div style="margin-top: 30px">
+        <p-floatlabel>
+          <p-iconfield>
+            <p-inputicon styleClass="pi pi-euro"/>
+            <input
+              class="customStyle"
+              formControlName="amount"
+              id="amount"
+              pInputText
+              required
+              type="number"/>
+          </p-iconfield>
+          <label for="amount">Määrä</label>
+        </p-floatlabel>
+      </div>
+
+      @if (isControlInvalid('amount')) {
+        <div class="alert alert-danger">
+          @if (billFormBuilder.get('amount')?.hasError('required')) {
+            <small class="error">Pakollinen</small>
+          } @else if (billFormBuilder.get('amount')?.hasError('min')) {
+            <small class="error">Määrä ei voi olla alle 0</small>
+          }
+        </div>
+      }
+
+      <div style="margin-top: 30px">
+        <p-floatlabel>
+          <p-iconfield>
+            <p-inputicon styleClass="pi pi-tag"/>
+            <input class="customStyle" formControlName="description" id="description" name="description" pInputText required>
+          </p-iconfield>
+          <label for="description">Kuvaus</label>
+        </p-floatlabel>
+      </div>
+
+      @if (isControlInvalid('description')) {
+        <div class="alert alert-danger">
+          @if (billFormBuilder.get('description')?.hasError('required')) {
+            <small class="error">Pakollinen</small>
+          } @else if (billFormBuilder.get('description')?.hasError('invalidDescription')) {
+            <small class="error">Vähintään 3 merkkiä pitkä</small>
+          }
+        </div>
+      }
+
+      <div style="margin-top: 30px">
+        <p-select
+          [options]="formCategories"
+          [style]="{ width: '200px' }"
+          formControlName="category"
+          placeholder="Kategoria"
+          optionLabel="description"
+          optionValue="index">
+        </p-select>
+      </div>
+
+      @if (isControlInvalid('category')) {
+        <div class="alert alert-danger">
+          @if (billFormBuilder.get('category')?.hasError('required')) {
+            <small class="error">Pakollinen</small>
+          } @else if (billFormBuilder.get('category')?.hasError('invalidCategory')) {
+            <small class="error">Jotain meni pieleen</small>
+          }
+        </div>
+      }
+
+      <br>
+      <br>
+      <div style="display: flex; justify-content: space-between; width: 100%;">
+        <p-button
+          [disabled]="!billFormBuilder.valid"
+          styleClass="p-button-primary"
+          pTooltip="Täytä kaikki tiedot ennen tallentamista"
+          type="submit">Tallenna
+        </p-button>
+        @if (showDeleteBillButton) {
+          <p-button
+            styleClass="p-button-danger"
+            (onClick)="deleteBill()">Poista
+          </p-button>
+        }
+      </div>
+    </form>
+  </p-card>
+</main>

@@ -3,5 +3,23 @@
 * {
   box-sizing: border-box;
   font-family: 'Source Sans Pro', sans-serif;
-  /*font-size: 24px;*/
+}
+
+.p-orderlist-controls {
+  display: none !important;
+}
+
+.p-orderlist {
+  height: 100%;
+  max-height: 100vh;
+}
+
+.p-orderlist-list {
+  height: 100%;
+  max-height: inherit;
+  overflow-y: auto;
+}
+
+.error {
+  color: red;
 }

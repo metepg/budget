@@ -1,20 +1,11 @@
-CREATE TABLE incomes
-(
-    id         SERIAL PRIMARY KEY,
-    username   TEXT      NOT NULL,
-    source     TEXT      NOT NULL,
-    amount     BIGINT    NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (username) REFERENCES users (username) ON DELETE CASCADE
-);
-
-CREATE TABLE expenses
+CREATE TABLE monthly_records
 (
     id          SERIAL PRIMARY KEY,
     username    TEXT      NOT NULL,
-    amount      BIGINT    NOT NULL,
+    type        TEXT      NOT NULL CHECK (type IN ('INCOME', 'EXPENSE')),
     description TEXT      NOT NULL,
-    created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    amount      BIGINT    NOT NULL,
+    modified_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (username) REFERENCES users (username) ON DELETE CASCADE
 );
 
@@ -23,15 +14,16 @@ CREATE TABLE saving_goals
     id           SERIAL PRIMARY KEY,
     username     TEXT   NOT NULL,
     savings_goal BIGINT NOT NULL,
-    created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (username) REFERENCES users (username) ON DELETE CASCADE
 );
 
 CREATE TABLE categories
 (
-    id       SERIAL PRIMARY KEY,
-    username TEXT NOT NULL,
-    name     TEXT NOT NULL UNIQUE,
+    id          SERIAL PRIMARY KEY,
+    username    TEXT NOT NULL,
+    description TEXT NOT NULL,
+    index       INTEGER,
     FOREIGN KEY (username) REFERENCES users (username) ON DELETE CASCADE
 );
 

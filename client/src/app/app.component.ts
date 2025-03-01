@@ -1,45 +1,79 @@
-import { Component, OnInit, signal, WritableSignal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { TestConnectionService } from './test-service.service';
-import { UserDetailsForm } from './user-details/user-details-form.component';
-import { UserService } from '../services/user.service';
+import { Component, OnInit } from '@angular/core';
+import { Router, RouterOutlet } from '@angular/router';
+import { UserService } from '../services/user/user.service';
 import { User } from '../models/User';
 import { NavbarComponent } from './navbar/navbar.component';
-import { MessageService } from 'primeng/api';
+import { MonthlyRecord } from '../models/MonthlyRecord';
+import { IncomeService } from '../services/income/income.service';
+import { filter, switchMap, tap } from 'rxjs';
+import { Toast } from 'primeng/toast';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { LocalStorageService } from '../services/local-storage/local-storage.service';
+import { PrimeNG } from 'primeng/config';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, UserDetailsForm, NavbarComponent],
-  providers: [MessageService],
+  imports: [RouterOutlet, NavbarComponent, Toast, ConfirmDialogModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 
 export class AppComponent implements OnInit {
 
-  isFirstLogin = signal<boolean | null>(null)
-  isConnected = signal(false);
-  user: WritableSignal<User | null> = signal(null);
+  user: User | null = null;
+  records: MonthlyRecord[] = [];
 
-  constructor(private superService: TestConnectionService, private userService: UserService) {
-  }
+  constructor(
+    private primengConfig: PrimeNG,
+    private userService: UserService,
+    private incomeService: IncomeService,
+    private localStorageService: LocalStorageService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
-    this.userService.getUser().subscribe({
-      next: (u) => {
-        this.user.set(u);
-        this.isFirstLogin.set(u?.income == null);
-      },
-      error: (err) => console.error('Error fetching user:', err)
+    this.primengConfig.setTranslation({
+      firstDayOfWeek: 1,
+      dayNames: ["Sunnuntai", "Maanantai", "Tiistai", "Keskiviikko", "Torstai", "Perjantai", "Lauantai"],
+      dayNamesShort: ["Su", "Ma", "Ti", "Ke", "To", "Pe", "La"],
+      dayNamesMin: ["Su", "Ma", "Ti", "Ke", "To", "Pe", "La"],
+      monthNames: ["Tammikuu", "Helmikuu", "Maaliskuu", "Huhtikuu", "Toukokuu", "Kesäkuu", "Heinäkuu", "Elokuu", "Syyskuu", "Lokakuu", "Marraskuu", "Joulukuu"],
+      monthNamesShort: ["Tammi", "Helmi", "Maalis", "Huhti", "Touko", "Kesä", "Heinä", "Elo", "Syys", "Loka", "Marras", "Joulu"],
+      today: "Tänään",
+      clear: "Tyhjennä",
     });
-
-    this.superService.testConnection().subscribe({
-      next: (result) => this.isConnected.set(result),
-      error: () => this.isConnected.set(false)
-    });
+    const storedUser = this.localStorageService.getUser();
+    if (storedUser) {
+      this.incomeService.getAll(storedUser.username).subscribe(records => {
+        this.user = storedUser;
+        this.records = records;
+        this.router.navigate(['/create']);
+      });
+    } else {
+      this.fetchUserFromDatabase();
+    }
   }
-  onFirstLoginComplete() {
-    this.isFirstLogin.set(false);
+
+  private fetchUserFromDatabase(): void {
+    this.userService.getUser().pipe(
+      tap(user => {
+        this.localStorageService.setUser(user)
+        if (user.income === null) {
+          this.router.navigate(['/profile']);
+        }
+      }),
+      filter(user => !!user),
+      switchMap(user =>
+        this.incomeService.getAll(user!.username).pipe(
+          tap(records => {
+            this.records = records;
+            this.user = user;
+          })
+        )
+      )
+    ).subscribe({
+      error: err => console.error('Error fetching user:', err)
+    });
   }
 }

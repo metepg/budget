@@ -1,0 +1,23 @@
+.category-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.index {
+  font-weight: bold;
+  min-width: 20px;
+  text-align: right;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+input {
+  flex-grow: 1;
+  width: 100%;
+}
+
+.add-category-btn {
+  margin-bottom: 5px;
+}

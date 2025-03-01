@@ -12,3 +12,6 @@
 .form-field {
   margin-bottom: 1rem;
 }
+.custom-card ::ng-deep .p-card-header {
+  color: red;
+}

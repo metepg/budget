@@ -1,44 +1,42 @@
-<div class="form-container">
-  <p-card header="Alkutiedot">
-    <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="p-fluid form-content">
+<main style="display: flex; justify-content: center">
+  <div class="form-container">
+    <p-tabView
+      [style]="{ 'margin-top': '20px' }"
+      [(activeIndex)]="activeTabIndex"
+      (activeIndexChange)="confirmTabChange($event)">
 
-      <p-float-label variant="in" class="form-field">
-        <p-inputNumber
-          id="netIncome"
-          formControlName="netIncome"
-          inputId="netIncome"
-          locale="fi"
-          [mode]="'decimal'"
-          [maxFractionDigits]="2">
-        </p-inputNumber>
-        <label for="netIncome">Nettotulot / kk</label>
-      </p-float-label>
+      <!-- Income -->
+      <p-tabPanel tabindex="0" header="TULOT">
+        <app-entry-form
+            #incomeForm
+            [type]="MonthlyRecordType.INCOME"
+            [user]="user"
+            [records]="incomes"
+            (entriesUpdated)="updateEntries($event, MonthlyRecordType.INCOME)">
+        </app-entry-form>
+      </p-tabPanel>
 
-      <p-float-label variant="in" class="form-field">
-        <p-inputNumber
-          id="otherIncome"
-          formControlName="otherIncome"
-          inputId="otherIncome"
-          locale="fi"
-          [mode]="'decimal'"
-          [maxFractionDigits]="2">
-        </p-inputNumber>
-        <label for="otherIncome">Muut tulot / kk</label>
-      </p-float-label>
+      <!-- Expense -->
+      <p-tabPanel tabindex="1" header="MENOT">
+        <app-entry-form
+            #expenseForm
+            [type]="MonthlyRecordType.EXPENSE"
+            [user]="user"
+            [records]="expenses"
+            (entriesUpdated)="updateEntries($event, MonthlyRecordType.EXPENSE)">
+        </app-entry-form>
+      </p-tabPanel>
 
-      <p-float-label variant="in" class="form-field">
-        <p-inputNumber
-          id="savingsGoal"
-          formControlName="savingsGoal"
-          inputId="savingsGoal"
-          locale="fi"
-          [mode]="'decimal'"
-          [maxFractionDigits]="2">
-        </p-inputNumber>
-        <label for="savingsGoal">Säästötavoite / kk</label>
-      </p-float-label>
+      <!-- Categories -->
+      <p-tabPanel tabindex="2" header="KATEGORIAT">
+        <app-categories
+            #categoryForm
+            [categories]="categories"
+            (saveCategories)="saveCategories($event)"
+            (updateCategories)="updateCategories($event)">
+        </app-categories>
+      </p-tabPanel>
 
-      <p-button type="submit" label="Tallenna" severity="primary" [raised]="true" [disabled]="userForm.invalid"></p-button>
-    </form>
-  </p-card>
-</div>
+    </p-tabView>
+  </div>
+</main>

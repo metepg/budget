@@ -1,4 +1,3 @@
-<p-toast [hideTransitionOptions]="'1000ms ease-out'" position="top-center"></p-toast>
 <p-toolbar [style]="{
   'position': 'sticky',
   'top': '0',
@@ -12,15 +11,15 @@
     <p-button
       icon="pi pi-plus"
       [rounded]="true"
-      [raised]="true"
-      severity="primary">
+      (onClick)="showTab(View.NEW_BILL)"
+      severity="help">
     </p-button>
     <p-button
       class="checkButton"
       icon="pi pi-book"
       [rounded]="true"
-      [raised]="true"
-      severity="warn">
+      (onClick)="showTab(View.SHOW_BILLS)"
+      severity="info">
     </p-button>
     <p
       [style.color]="currentBudget >= 0 ? 'green' : 'red'">
@@ -28,17 +27,17 @@
     </p>
     <p-button
       class="checkButton"
-      icon="pi pi-info-circle"
+      icon="pi pi-chart-bar"
       [rounded]="true"
-      [raised]="true"
-      severity="info">
+      (onClick)="showTab(View.SHOW_STATISTICS)"
+      severity="contrast">
     </p-button>
     <p-button
       class="checkButton"
       icon="pi pi-user"
       [rounded]="true"
-      [raised]="true"
-      severity="secondary">
+      (onClick)="showTab(View.SHOW_PROFILE)"
+      severity="primary">
     </p-button>
   </div>
 </p-toolbar>

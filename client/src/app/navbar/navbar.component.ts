@@ -18,7 +18,8 @@ export class NavbarComponent {
   private routeMap = {
     [View.NEW_BILL]: 'create',
     [View.SHOW_BILLS]: 'bills',
-    [View.SHOW_STATISTICS]: 'stats'
+    [View.SHOW_STATISTICS]: 'stats',
+    [View.SHOW_PROFILE]: 'profile'
   };
   @Input() debtAmount: number;
   @Output() debtEmitter = new EventEmitter<void>();
@@ -28,11 +29,9 @@ export class NavbarComponent {
 
   showTab(view: View) {
     const route = this.routeMap[view] || '';
+    console.log("navigate to", route)
+    console.log("navigate to", view)
     this.router.navigate([route]);
-  }
-
-  payDebt() {
-    this.debtEmitter.emit();
   }
 
 }
