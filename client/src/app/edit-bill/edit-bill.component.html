@@ -1,7 +1,7 @@
 <main style="display: flex; justify-content: center">
   <p-card [style.margin-top]="'3vh'">
-    <h2>{{ billFormBuilder.get('transactionType')?.value === MonthlyRecordType.INCOME ? 'Lisää tulo' : 'Lisää meno' }}</h2>
-    <form (ngSubmit)="onSubmit()" [formGroup]="billFormBuilder">
+    <h2>{{ billId ? 'Muokkaa tapahtumaa' : 'Lisää tapahtuma' }}</h2>
+    <form (ngSubmit)="onSubmit()" [formGroup]="billForm">
       <p-select-button
         [options]="transactionTypeOptions"
         formControlName="transactionType"
@@ -38,15 +38,10 @@
         </p-floatlabel>
       </div>
 
-      @if (isControlInvalid('amount')) {
-        <div class="alert alert-danger">
-          @if (billFormBuilder.get('amount')?.hasError('required')) {
-            <small class="error">Pakollinen</small>
-          } @else if (billFormBuilder.get('amount')?.hasError('min')) {
-            <small class="error">Määrä ei voi olla alle 0</small>
-          }
-        </div>
-      }
+      <div *ngIf="isControlInvalid('amount')" class="alert alert-danger">
+        <small *ngIf="billForm.get('amount')?.hasError('required')" class="error">Pakollinen</small>
+        <small *ngIf="billForm.get('amount')?.hasError('min')" class="error">Määrä ei voi olla alle 0</small>
+      </div>
 
       <div style="margin-top: 30px">
         <p-floatlabel>
@@ -58,19 +53,14 @@
         </p-floatlabel>
       </div>
 
-      @if (isControlInvalid('description')) {
-        <div class="alert alert-danger">
-          @if (billFormBuilder.get('description')?.hasError('required')) {
-            <small class="error">Pakollinen</small>
-          } @else if (billFormBuilder.get('description')?.hasError('invalidDescription')) {
-            <small class="error">Vähintään 3 merkkiä pitkä</small>
-          }
-        </div>
-      }
+      <div *ngIf="isControlInvalid('description')" class="alert alert-danger">
+        <small *ngIf="billForm.get('description')?.hasError('required')" class="error">Pakollinen</small>
+        <small *ngIf="billForm.get('description')?.hasError('invalidDescription')" class="error">Vähintään 3 merkkiä pitkä</small>
+      </div>
 
       <div style="margin-top: 30px">
         <p-select
-          [options]="formCategories"
+          [options]="categories"
           [style]="{ width: '200px' }"
           formControlName="category"
           placeholder="Kategoria"
@@ -79,20 +69,15 @@
         </p-select>
       </div>
 
-      @if (isControlInvalid('category')) {
-        <div class="alert alert-danger">
-          @if (billFormBuilder.get('category')?.hasError('required')) {
-            <small class="error">Pakollinen</small>
-          } @else if (billFormBuilder.get('category')?.hasError('invalidCategory')) {
-            <small class="error">Jotain meni pieleen</small>
-          }
-        </div>
-      }
+      <div *ngIf="isControlInvalid('category')" class="alert alert-danger">
+        <small *ngIf="billForm.get('category')?.hasError('required')" class="error">Pakollinen</small>
+        <small *ngIf="billForm.get('category')?.hasError('invalidCategory')" class="error">Jotain meni pieleen</small>
+      </div>
 
       <br>
       <br>
       <div style="display: flex; align-items: center; gap: 4px;">
-        <p-checkbox formControlName="recurring" [binary]="true"  id="Recurring" inputId="Recurring" />
+        <p-checkbox formControlName="recurring" [binary]="true" id="Recurring" inputId="Recurring" />
         <label for="Recurring" class="ml-2">Toistuva</label>
       </div>
 
@@ -100,17 +85,28 @@
       <br>
       <div style="display: flex; justify-content: space-between; width: 100%;">
         <p-button
-          [disabled]="!billFormBuilder.valid"
+          size="small"
+          [disabled]="!billForm.valid"
           styleClass="p-button-primary"
           pTooltip="Täytä kaikki tiedot ennen tallentamista"
-          type="submit">Tallenna
+          type="submit">
+          Tallenna
         </p-button>
-        @if (showDeleteBillButton) {
-          <p-button
-            styleClass="p-button-danger"
-            (onClick)="deleteBill()">Poista
-          </p-button>
-        }
+
+        <p-button
+          size="small"
+          *ngIf="billId"
+          styleClass="p-button-danger"
+          (onClick)="deleteBill()">
+          Poista
+        </p-button>
+
+        <p-button
+          size="small"
+          styleClass="p-button-secondary"
+          (onClick)="cancel()">
+          Peruuta
+        </p-button>
       </div>
     </form>
   </p-card>

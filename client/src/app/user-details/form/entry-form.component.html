@@ -14,7 +14,6 @@
       <tr>
         <th style="width: 50px;">Kuvaus</th>
         <th style="width: 30px;">Määrä</th>
-        <th style="width: 10px;">PVM</th>
         <th style="max-width: 10px; text-align: center"></th>
       </tr>
     </ng-template>
@@ -32,31 +31,26 @@
           <p-inputNumber
             placeholder="Määrä"
             formControlName="amount"
-            class="compact-input2">
+            class="compact-input2"
+            [mode]="'decimal'"
+            [minFractionDigits]="2"
+            [maxFractionDigits]="2"
+            [useGrouping]="true"
+            [locale]="'fi-FI'">
           </p-inputNumber>
         </td>
-        <td style="">12.</td>
         <td style="width: 10px; text-align: center;">
-            <p-button
-              [style]=""
-              type="button"
-              icon="pi pi-pen-to-square"
-              text="true"
-              severity="contrast"
-              (click)="edit(i)">
-            </p-button>
-<!--            <p-button-->
-<!--              type="button"-->
-<!--              icon="pi pi-times"-->
-<!--              text="true"-->
-<!--              severity="danger"-->
-<!--              (click)="removeEntry(i)">-->
-<!--            </p-button>-->
+          <p-button
+            [style]=""
+            type="button"
+            icon="pi pi-pen-to-square"
+            text="true"
+            severity="contrast"
+            (click)="edit(i)">
+          </p-button>
         </td>
       </tr>
     </ng-template>
   </p-table>
-
-  <p-button [style]="{ 'margin': '8px', 'padding': '8px' }" (click)="addEntry()" variant="text" [label]="btnLabel" severity="contrast"></p-button>
 </form>
 

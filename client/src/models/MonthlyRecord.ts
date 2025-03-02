@@ -6,5 +6,6 @@ export interface MonthlyRecord {
   type: MonthlyRecordType;
   description: string;
   amount: number;
+  recurring: boolean;
   recordedAt?: string;
 }

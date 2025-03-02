@@ -45,10 +45,10 @@ export class AppComponent implements OnInit {
     });
     const storedUser = this.localStorageService.getUser();
     if (storedUser) {
-      this.incomeService.getAll(storedUser.username).subscribe(records => {
+      this.incomeService.getAll().subscribe(records => {
         this.user = storedUser;
         this.records = records;
-        this.router.navigate(['/create']);
+        this.router.navigate(['/bills/new']);
       });
     } else {
       this.fetchUserFromDatabase();
@@ -65,7 +65,7 @@ export class AppComponent implements OnInit {
       }),
       filter(user => !!user),
       switchMap(user =>
-        this.incomeService.getAll(user!.username).pipe(
+        this.incomeService.getAll().pipe(
           tap(records => {
             this.records = records;
             this.user = user;

@@ -7,5 +7,6 @@ export interface Bill {
   date: Date;
   type: MonthlyRecordType;
   description: string;
+  recurring: boolean;
   ownerName: string
 }

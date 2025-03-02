@@ -56,6 +56,14 @@ export class CategoriesComponent implements OnInit, OnChanges {
   }
 
   removeCategory(index: number) {
+    const currentCategory = this.categories[index];
+    if (currentCategory.description === '') {
+      this.categories = this.categories.filter((_, i) => i !== index);
+      return;
+    }
+    const isOk = confirm(`Poistetaanko '${currentCategory.description}'?`);
+    if (!isOk) return;
+
     this.categories = this.categories.filter((_, i) => i !== index);
     this.updateCategories.emit([...this.categories]);
   }

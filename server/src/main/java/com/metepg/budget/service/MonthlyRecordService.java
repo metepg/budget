@@ -2,7 +2,11 @@ package com.metepg.budget.service;
 
 import com.metepg.budget.dto.MonthlyRecordResponseDTO;
 import com.metepg.budget.model.MonthlyRecord;
+import com.metepg.budget.model.User;
 import com.metepg.budget.repository.MonthlyRecordRepository;
+import com.metepg.budget.util.SecurityUtil;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,31 +14,54 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class MonthlyRecordService {
 
     private final MonthlyRecordRepository monthlyRecordRepository;
-
-    public MonthlyRecordService(MonthlyRecordRepository monthlyRecordRepository) {
-        this.monthlyRecordRepository = monthlyRecordRepository;
-    }
+    private final BudgetService budgetService;
 
     @Transactional
     public List<MonthlyRecordResponseDTO> saveIncomes(List<MonthlyRecord> moneyEntries) {
-        // Convert amounts to cents before saving
-        moneyEntries.forEach(monthlyRecord -> monthlyRecord.setAmount(monthlyRecord.getAmount() * 100));
+        moneyEntries.forEach(record -> record.setAmount(record.getAmount() * 100));
 
-        // Save all incomes
-        List<MonthlyRecord> savedMoneyEntries = monthlyRecordRepository.saveAll(moneyEntries);
+        List<MonthlyRecord> savedRecords = monthlyRecordRepository.saveAll(moneyEntries);
 
-        // Convert saved incomes to DTOs and return
-        return savedMoneyEntries.stream()
+        // Delegate budget updates to the BudgetService
+        savedRecords.forEach(budgetService::updateBudgetAfterTransaction);
+
+        return savedRecords.stream()
                 .map(MonthlyRecordResponseDTO::new)
                 .collect(Collectors.toList());
     }
 
-    public List<MonthlyRecordResponseDTO> findAllByUsername(String username) {
-        List<MonthlyRecord> monthlyRecords = monthlyRecordRepository.findAllByUsername(username);
+    public MonthlyRecordResponseDTO getBill(Integer id) {
+        MonthlyRecord bill = monthlyRecordRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Bill not found with id: " + id));
+        return new MonthlyRecordResponseDTO(bill);
+    }
+
+    public List<MonthlyRecordResponseDTO> findAllByUsername() {
+        User user = SecurityUtil.getCurrentUser();
+        if (user == null) {
+            return List.of();
+        }
+        List<MonthlyRecord> monthlyRecords = monthlyRecordRepository.findAllByUsername(user.getUsername());
         return monthlyRecords.stream()
+                .map(MonthlyRecordResponseDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    public void deleteById(Integer id) {
+        this.monthlyRecordRepository.deleteById(id);
+    }
+
+    public List<MonthlyRecordResponseDTO> findAllByUsernameAndRecurringTrue() {
+        User user = SecurityUtil.getCurrentUser();
+        if (user == null) {
+            return List.of();
+        }
+        return this.monthlyRecordRepository.findAllByUsernameAndRecurringTrue(user.getUsername())
+                .stream()
                 .map(MonthlyRecordResponseDTO::new)
                 .collect(Collectors.toList());
     }

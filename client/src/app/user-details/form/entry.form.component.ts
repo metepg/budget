@@ -9,6 +9,7 @@ import { MonthlyRecord } from '../../../models/MonthlyRecord';
 import { Tooltip } from 'primeng/tooltip';
 import { deepEqual } from '../../../utils/utils';
 import MonthlyRecordType from '../../../enums/MonthlyRecordType';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-entry-form',
@@ -31,18 +32,19 @@ export class EntryFormComponent implements OnInit, OnChanges {
   @Input() type: MonthlyRecordType;
   @Input() user: { username: string };
   @Output() entriesUpdated = new EventEmitter<MonthlyRecord[]>();
+  @Output() removeEntryEmitter = new EventEmitter<MonthlyRecord>();
   saveBtnLabel: string;
 
   entryForm: FormGroup = this.fb.group({
     entries: this.fb.array([])
   });
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private router: Router) {
   }
 
   ngOnInit(): void {
     this.populateForm();
-    this.saveBtnLabel = this.type === MonthlyRecordType.INCOME ? 'Tallenna tulot' : 'Tallenna menot';
+    this.saveBtnLabel = this.type === MonthlyRecordType.INCOME ? 'Tallenna vakiotulot' : 'Tallenna vakiomenot';
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -53,10 +55,6 @@ export class EntryFormComponent implements OnInit, OnChanges {
 
   get entryControls(): FormArray<FormGroup> {
     return this.entryForm.get('entries') as FormArray<FormGroup>;
-  }
-
-  get btnLabel(): string {
-    return this.type === MonthlyRecordType.INCOME ? '+ Lisää tulo' : '+ Lisää meno';
   }
 
   populateForm(): void {
@@ -76,39 +74,41 @@ export class EntryFormComponent implements OnInit, OnChanges {
       type: [record.type ?? this.type],
       description: [ record.description || null, Validators.required],
       amount: [ record.amount || null, [Validators.required, Validators.min(0.01)]],
+      recurring: [ record.recurring || true ],
       recordedAt: [record.recordedAt]
     });
   }
 
   addEntry(): void {
+    this.router.navigate(['/bills/new']);
     this.entryControls.push(this.createEntryGroup({ description: '', amount: 0 }));
-  }
-
-  removeEntry(index: number): void {
-    this.entryControls.removeAt(index);
   }
 
   save(): void {
     if (this.entryForm.valid) {
+      this.entryControls.controls.forEach(control => control.enable());
       this.entriesUpdated.emit(this.entryForm.value.entries);
+      this.entryControls.controls.forEach(control => control.disable());
     }
   }
 
   get isDirty(): boolean {
-    return !deepEqual(this.entryForm.value.entries, this.records);
+    return !deepEqual(this.entryForm.getRawValue().entries, this.records);
   }
 
   edit(index: number): void {
-    const entry = this.entryControls.at(index);
-    const descriptionControl = entry.get('description');
-    const amountControl = entry.get('amount');
-
-    if (descriptionControl?.disabled) {
-      descriptionControl.enable();
-      amountControl?.enable();
-    } else {
-      descriptionControl?.disable();
-      amountControl?.disable();
-    }
+    const bill = this.records[index];
+    this.router.navigate([`/bills/${bill.id}`]);
+    // const entry = this.entryControls.at(index);
+    // const descriptionControl = entry.get('description');
+    // const amountControl = entry.get('amount');
+    //
+    // if (descriptionControl?.disabled) {
+    //   descriptionControl.enable();
+    //   amountControl?.enable();
+    // } else {
+    //   descriptionControl?.disable();
+    //   amountControl?.disable();
+    // }
   }
 }

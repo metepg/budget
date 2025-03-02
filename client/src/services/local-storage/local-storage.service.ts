@@ -8,29 +8,28 @@ import { Category } from '../../models/Category';
 export class LocalStorageService {
 
   setUser(user: User) {
-    localStorage.setItem('user', JSON.stringify(user))
+    localStorage.setItem('user', JSON.stringify(user));
   }
 
   getUser(): User | null {
     const userFromStorage = localStorage.getItem('user');
-    if (!userFromStorage) {
-      return null;
-    } else {
-      return JSON.parse(userFromStorage);
-    }
+    return userFromStorage ? JSON.parse(userFromStorage) : null;
   }
-  
+
   setCategories(categories: Category[]) {
-    localStorage.setItem('categories', JSON.stringify(categories))
+    localStorage.setItem('categories', JSON.stringify(categories));
   }
 
   getCategories(): Category[] | null {
     const categoriesFromStorage = localStorage.getItem('categories');
-    if (!categoriesFromStorage) {
-      return null;
-    } else {
-      return JSON.parse(categoriesFromStorage);
-    }
+    return categoriesFromStorage ? JSON.parse(categoriesFromStorage) : null;
   }
-  
+
+  setSelectedBudget(budgetType: string) {
+    localStorage.setItem('selectedBudget', budgetType);
+  }
+
+  getSelectedBudget(): string | null {
+    return localStorage.getItem('selectedBudget');
+  }
 }

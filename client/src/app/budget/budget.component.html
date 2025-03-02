@@ -1,0 +1,10 @@
+<h2>Valitse budjetti</h2>
+
+<p-select
+  [options]="budgetOptions"
+  [(ngModel)]="selectedBudget"
+  (onChange)="onBudgetChange($event.value)"
+  placeholder="Valitse budjetti">
+</p-select>
+
+

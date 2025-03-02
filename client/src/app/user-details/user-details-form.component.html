@@ -1,42 +1,47 @@
-<main style="display: flex; justify-content: center">
-  <div class="form-container">
-    <p-tabView
-      [style]="{ 'margin-top': '20px' }"
-      [(activeIndex)]="activeTabIndex"
-      (activeIndexChange)="confirmTabChange($event)">
+<div class="form-container">
+  <p-tabView
+    [style]="{ 'margin-top': '20px' }"
+    [(activeIndex)]="activeTabIndex"
+  >
 
-      <!-- Income -->
-      <p-tabPanel tabindex="0" header="TULOT">
-        <app-entry-form
-            #incomeForm
-            [type]="MonthlyRecordType.INCOME"
-            [user]="user"
-            [records]="incomes"
-            (entriesUpdated)="updateEntries($event, MonthlyRecordType.INCOME)">
-        </app-entry-form>
-      </p-tabPanel>
+    <!-- Income -->
+    <p-tabPanel tabindex="0" header="TULOT">
+      <app-entry-form
+          #incomeForm
+          [type]="MonthlyRecordType.INCOME"
+          [user]="user"
+          [records]="incomes"
+          (removeEntryEmitter)="removeEntry($event)"
+          (entriesUpdated)="updateEntries($event, MonthlyRecordType.INCOME)">
+      </app-entry-form>
+    </p-tabPanel>
 
-      <!-- Expense -->
-      <p-tabPanel tabindex="1" header="MENOT">
-        <app-entry-form
-            #expenseForm
-            [type]="MonthlyRecordType.EXPENSE"
-            [user]="user"
-            [records]="expenses"
-            (entriesUpdated)="updateEntries($event, MonthlyRecordType.EXPENSE)">
-        </app-entry-form>
-      </p-tabPanel>
+    <!-- Expense -->
+    <p-tabPanel tabindex="1" header="MENOT">
+      <app-entry-form
+          #expenseForm
+          [type]="MonthlyRecordType.EXPENSE"
+          [user]="user"
+          [records]="expenses"
+          (entriesUpdated)="updateEntries($event, MonthlyRecordType.EXPENSE)">
+      </app-entry-form>
+    </p-tabPanel>
 
-      <!-- Categories -->
-      <p-tabPanel tabindex="2" header="KATEGORIAT">
-        <app-categories
-            #categoryForm
-            [categories]="categories"
-            (saveCategories)="saveCategories($event)"
-            (updateCategories)="updateCategories($event)">
-        </app-categories>
-      </p-tabPanel>
+    <!-- Categories -->
+    <p-tabPanel tabindex="2" header="KATEGORIAT">
+      <app-categories
+          #categoryForm
+          [categories]="categories"
+          (saveCategories)="saveCategories($event)"
+          (updateCategories)="updateCategories($event)">
+      </app-categories>
+    </p-tabPanel>
 
-    </p-tabView>
-  </div>
-</main>
+    <p-tabPanel>
+      <ng-template pTemplate="header">
+        <i class="pi pi-dollar"></i>
+      </ng-template>
+      <app-budget></app-budget>
+    </p-tabPanel>
+  </p-tabView>
+</div>

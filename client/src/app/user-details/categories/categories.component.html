@@ -10,31 +10,34 @@
   size="small">
 </p-button>
 
-<p-orderList
-  [value]="categories"
-  [dragdrop]="true"
-  [listStyle]="{ 'max-height': '100vh' }"
-  (onReorder)="onCategoriesReorder($event)">
-  <ng-template let-category let-i="index" pTemplate="item">
-    <div class="category-item">
-      <span class="index">{{ i + 1 }}.</span>
-      <input
-        pInputText
-        [(ngModel)]="category.description"
-        placeholder="Kategorian nimi"
-        (keydown)="$event.stopPropagation()"
-        (keyup)="$event.stopPropagation()"/>
-      <p-button
-        severity="danger"
-        rounded="true"
-        text="true"
-        label=""
-        icon="pi pi-times"
-        (click)="removeCategory(i)">
-      </p-button>
-    </div>
-  </ng-template>
-</p-orderList>
+@if (categories.length > 0) {
+  <p-orderList
+    [value]="categories"
+    [dragdrop]="true"
+    [listStyle]="{ 'max-height': '100vh' }"
+    (onReorder)="onCategoriesReorder($event)">
+    <ng-template let-category let-i="index" pTemplate="item">
+      <div class="category-item">
+        <span class="index">{{ i + 1 }}.</span>
+        <input
+          pInputText
+          [(ngModel)]="category.description"
+          placeholder="Kategorian nimi"
+          (keydown)="$event.stopPropagation()"
+          (keyup)="$event.stopPropagation()"/>
+        <p-button
+          severity="danger"
+          rounded="true"
+          text="true"
+          label=""
+          icon="pi pi-times"
+          (click)="removeCategory(i)">
+        </p-button>
+      </div>
+    </ng-template>
+  </p-orderList>
+}
+<br/>
 <p-button
   [style]="{ 'margin': '8px', 'padding': '8px' }"
   (click)="addCategory()"

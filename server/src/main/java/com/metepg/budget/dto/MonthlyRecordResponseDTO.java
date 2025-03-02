@@ -11,7 +11,8 @@ public record MonthlyRecordResponseDTO(
         String description,
         long amount,
         LocalDateTime recordedAt,
-        MonthlyRecordEnum type
+        MonthlyRecordEnum type,
+        boolean recurring
 ) {
     public MonthlyRecordResponseDTO(MonthlyRecord monthlyRecord) {
         this(
@@ -20,7 +21,8 @@ public record MonthlyRecordResponseDTO(
                 monthlyRecord.getDescription(),
                 monthlyRecord.getAmount() / 100,
                 monthlyRecord.getModifiedAt(),
-                monthlyRecord.getType()
+                monthlyRecord.getType(),
+                monthlyRecord.getRecurring()
         );
     }
 }

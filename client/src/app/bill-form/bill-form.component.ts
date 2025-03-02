@@ -3,14 +3,13 @@ import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, ValidatorFn, 
 import { Subscription } from 'rxjs';
 import { Category } from '../../models/Category';
 import { User } from '../../models/User';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { LocalStorageService } from '../../services/local-storage/local-storage.service';
 import { Bill } from '../../models/Bill';
 import { InputTextModule } from 'primeng/inputtext';
 import { DropdownModule } from 'primeng/dropdown';
 import { Button } from 'primeng/button';
 import { isValidDescription } from '../../utils/formValidationUtils';
-import MonthlyRecordType from '../../enums/MonthlyRecordType';
 import { CategoryService } from '../../services/category/category.service';
 import { Card } from 'primeng/card';
 import { IconField } from 'primeng/iconfield';
@@ -21,6 +20,10 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { SelectButton } from 'primeng/selectbutton';
 import { DatePicker } from 'primeng/datepicker';
 import { Tooltip } from 'primeng/tooltip';
+import { Checkbox } from 'primeng/checkbox';
+import { IncomeService } from '../../services/income/income.service';
+import { BudgetService } from '../../services/budget/budget.service';
+import MonthlyRecordType from '../../enums/MonthlyRecordType';
 
 interface FormCategory {
   description: string;
@@ -48,7 +51,8 @@ interface TransactionTypeOption {
     FloatLabel,
     SelectButton,
     DatePicker,
-    Tooltip
+    Tooltip,
+    Checkbox
   ],
   templateUrl: './bill-form.component.html',
   styleUrl: './bill-form.component.scss'
@@ -67,6 +71,7 @@ export class BillFormComponent implements OnInit, OnDestroy {
   @Input() description: string;
   @Input() amount: number;
   @Input() category: number;
+  @Input() recurring: boolean;
   @Output() formEmitter = new EventEmitter<Bill>();
   @Output() deleteBillEmitter = new EventEmitter<number>();
   billFormBuilder: FormGroup<{
@@ -74,14 +79,18 @@ export class BillFormComponent implements OnInit, OnDestroy {
     category: FormControl<number | null>;
     description: FormControl<string | null>;
     date: FormControl<Date | null>;
-    transactionType: FormControl<string | null>;
-  }>
+    recurring: FormControl<boolean | null>;
+    transactionType: FormControl<MonthlyRecordType | null>;
+  }>;
   today: Date = new Date();
 
   constructor(
     private formBuilder: FormBuilder,
     private confirmationService: ConfirmationService,
     private categoryService: CategoryService,
+    private incomeService: IncomeService,
+    private messageService: MessageService,
+    private budgetService: BudgetService,
     private localStorageService: LocalStorageService
   ) {
     this.submitButtonIsDisabled = true;
@@ -103,8 +112,8 @@ export class BillFormComponent implements OnInit, OnDestroy {
         { value: this.amount, disabled: this.disabledFields.includes('amount') },
         [Validators.required, Validators.min(1)]
       ),
-      transactionType: new FormControl<string | null>(
-        'EXPENSE',
+      transactionType: new FormControl<MonthlyRecordType | null>(
+        MonthlyRecordType.EXPENSE,
         [Validators.required]
       ),
       category: new FormControl<number | null>(
@@ -114,6 +123,9 @@ export class BillFormComponent implements OnInit, OnDestroy {
       description: new FormControl<string | null>(
         { value: this.description, disabled: this.disabledFields.includes('description') },
         [Validators.required, isValidDescription as ValidatorFn]
+      ),
+      recurring: new FormControl<boolean>(
+        { value: this.recurring ?? false, disabled: this.disabledFields.includes('recurring') },
       ),
       date: new FormControl<Date | null>(
         new Date(),
@@ -129,35 +141,53 @@ export class BillFormComponent implements OnInit, OnDestroy {
 
   onSubmit(): void {
     this.submitButtonIsDisabled = true;
-    const {amount, category, description} = this.billFormBuilder.value;
+    const { amount, category, description, transactionType, recurring } = this.billFormBuilder.value;
     this.user = this.localStorageService.getUser();
+    console.log(this.billFormBuilder.value)
 
-    if (!this.billFormBuilder.valid || !this.user || !amount || !category || !description) {
+    if (!this.billFormBuilder.valid || !this.user || !amount || !description || !transactionType) {
       return;
     }
 
-    const bill = {
+    const monthlyRecord = {
+      id: null,
       amount,
-      ownerName: this.user.username,
-      categoryId: category,
+      username: this.user.username,
+      categoryId: category!,
       date: new Date(),
-      type: MonthlyRecordType.EXPENSE,
+      type: transactionType,
+      recurring: recurring!,
       description
-    }
-    console.log(bill)
-    this.formEmitter.emit(bill);
-    this.submitButtonIsDisabled = false;
+    };
+    console.log(monthlyRecord)
+
+    this.incomeService.saveIncome([monthlyRecord]).subscribe(response => {
+      console.log(response);
+      this.messageService.add({ severity: 'success', summary: 'Tallennus onnistui', life: 1500 });
+      this.budgetService.notifyBudgetChange();
+      this.billFormBuilder.reset({
+        amount: null,
+        transactionType: MonthlyRecordType.EXPENSE,
+        category: null,
+        description: '',
+        recurring: false,
+        date: new Date()
+      });
+      this.submitButtonIsDisabled = false;
+    });
   }
 
   deleteBill() {
     if (!this.id) return;
 
-    this.confirmationService.confirm({header: 'Varmistus', message: `Haluatko varmasti poistaa laskun?`,
+    this.confirmationService.confirm({
+      header: 'Varmistus', message: `Haluatko varmasti poistaa laskun?`,
       accept: (): void => {
         this.deleteBillEmitter.emit(this.id);
       },
       // eslint-disable-next-line @typescript-eslint/no-empty-function
-      reject: () => {},
+      reject: () => {
+      },
     });
   }
 
@@ -168,4 +198,5 @@ export class BillFormComponent implements OnInit, OnDestroy {
     }
   }
 
+  protected readonly MonthlyRecordType = MonthlyRecordType;
 }

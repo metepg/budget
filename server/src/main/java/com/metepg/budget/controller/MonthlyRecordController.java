@@ -21,13 +21,30 @@ public class MonthlyRecordController {
     private final MonthlyRecordService monthlyRecordService;
 
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<MonthlyRecordResponseDTO> getAllEntries(@RequestParam String username) {
-        return monthlyRecordService.findAllByUsername(username);
+    public List<MonthlyRecordResponseDTO> getAllEntries() {
+        return monthlyRecordService.findAllByUsername();
     }
 
-    @PostMapping
+    @GetMapping("/{id}")
+    public MonthlyRecordResponseDTO getBill(@PathVariable Integer id) {
+        return monthlyRecordService.getBill(id);
+    }
+
+    @GetMapping(value = "/recurring", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<MonthlyRecordResponseDTO> getAllRecurringEntries() {
+        return monthlyRecordService.findAllByUsernameAndRecurringTrue();
+    }
+
+    @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<MonthlyRecordResponseDTO>> saveIncomes(@Valid @RequestBody List<MonthlyRecord> monthlyRecord) {
         List<MonthlyRecordResponseDTO> savedIncome = monthlyRecordService.saveIncomes(monthlyRecord);
         return ResponseEntity.ok(savedIncome);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable Integer id) {
+        this.monthlyRecordService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }

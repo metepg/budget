@@ -17,6 +17,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "monthly_records")
 @Data
@@ -42,9 +43,14 @@ public class MonthlyRecord {
 
     @NotNull
     @Min(value = 1, message = "Amount must be greater than 0")
-    private Long amount;
+    private Integer amount;
+
+    @NotNull
+    @Column(nullable = false)
+    private Boolean recurring = false;
 
     @NotNull
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime modifiedAt = LocalDateTime.now();
+
 }
