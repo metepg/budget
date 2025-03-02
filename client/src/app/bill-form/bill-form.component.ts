@@ -26,6 +26,7 @@ import { BudgetService } from '../../services/budget/budget.service';
 import MonthlyRecordType from '../../enums/MonthlyRecordType';
 
 interface FormCategory {
+  id?: number;
   description: string;
   index: number;
 }
@@ -70,13 +71,13 @@ export class BillFormComponent implements OnInit, OnDestroy {
   @Input() showDeleteBillButton = false;
   @Input() description: string;
   @Input() amount: number;
-  @Input() category: number;
+  @Input() category: Category;
   @Input() recurring: boolean;
   @Output() formEmitter = new EventEmitter<Bill>();
   @Output() deleteBillEmitter = new EventEmitter<number>();
   billFormBuilder: FormGroup<{
     amount: FormControl<number | null>;
-    category: FormControl<number | null>;
+    category: FormControl<Category | null>;
     description: FormControl<string | null>;
     date: FormControl<Date | null>;
     recurring: FormControl<boolean | null>;
@@ -97,16 +98,6 @@ export class BillFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.categoryService.getAll().subscribe(categories => {
-      this.formCategories = categories.sort((a, b) => a.index - b.index);
-      this.billFormBuilder.get('category')?.updateValueAndValidity();
-    });
-
-    this.transactionTypeOptions = [
-      { label: 'Meno', value: MonthlyRecordType.EXPENSE },
-      { label: 'Tulo', value: MonthlyRecordType.INCOME }
-    ];
-
     this.billFormBuilder = this.formBuilder.group({
       amount: new FormControl<number | null>(
         { value: this.amount, disabled: this.disabledFields.includes('amount') },
@@ -116,7 +107,7 @@ export class BillFormComponent implements OnInit, OnDestroy {
         MonthlyRecordType.EXPENSE,
         [Validators.required]
       ),
-      category: new FormControl<number | null>(
+      category: new FormControl<Category | null>(
         { value: this.category, disabled: this.disabledFields.includes('category') },
         [Validators.required]
       ),
@@ -132,6 +123,23 @@ export class BillFormComponent implements OnInit, OnDestroy {
         [Validators.required]
       )
     });
+
+    this.categoryService.getAll().subscribe(categories => {
+      this.formCategories = categories.sort((a, b) => a.index - b.index);
+
+      // 🔹 Ensure selected category is updated after categories load
+      if (this.billFormBuilder.get('category')?.value) {
+        const selectedCategory = this.formCategories.find(c => c.id === this.billFormBuilder.get('category')?.value?.id);
+        this.billFormBuilder.patchValue({ category: selectedCategory || null });
+      }
+
+      this.billFormBuilder.get('category')?.updateValueAndValidity();
+    });
+
+    this.transactionTypeOptions = [
+      { label: 'Meno', value: MonthlyRecordType.EXPENSE },
+      { label: 'Tulo', value: MonthlyRecordType.INCOME }
+    ];
   }
 
   isControlInvalid(controlName: string): boolean {
@@ -141,9 +149,10 @@ export class BillFormComponent implements OnInit, OnDestroy {
 
   onSubmit(): void {
     this.submitButtonIsDisabled = true;
-    const { amount, category, description, transactionType, recurring } = this.billFormBuilder.value;
+    const { amount, date, category, description, transactionType, recurring } = this.billFormBuilder.value;
     this.user = this.localStorageService.getUser();
-    console.log(this.billFormBuilder.value)
+    const currentCategory = this.formCategories.find(c => c.id === category);
+    if (!currentCategory) return;
 
     if (!this.billFormBuilder.valid || !this.user || !amount || !description || !transactionType) {
       return;
@@ -153,13 +162,12 @@ export class BillFormComponent implements OnInit, OnDestroy {
       id: null,
       amount,
       username: this.user.username,
-      categoryId: category!,
-      date: new Date(),
+      category: currentCategory!,
+      date: date!,
       type: transactionType,
       recurring: recurring!,
       description
     };
-    console.log(monthlyRecord)
 
     this.incomeService.saveIncome([monthlyRecord]).subscribe(response => {
       console.log(response);

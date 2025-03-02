@@ -8,7 +8,6 @@ import com.metepg.budget.util.SecurityUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,7 +19,6 @@ public class MonthlyRecordService {
     private final MonthlyRecordRepository monthlyRecordRepository;
     private final BudgetService budgetService;
 
-    @Transactional
     public List<MonthlyRecordResponseDTO> saveIncomes(List<MonthlyRecord> moneyEntries) {
         moneyEntries.forEach(record -> record.setAmount(record.getAmount() * 100));
 

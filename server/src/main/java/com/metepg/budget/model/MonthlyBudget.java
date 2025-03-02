@@ -11,7 +11,6 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 import java.time.LocalDate;
-
 @Entity
 @Data
 @Table(name = "monthly_budgets")
@@ -35,6 +34,9 @@ public class MonthlyBudget {
 
     @Column(name = "cumulative_savings", nullable = false)
     private Long cumulativeSavings = 0L;
+
+    @Column(name = "remaining_budget", nullable = false)
+    private Long remainingBudget = 0L;
 
     @ManyToOne
     @JoinColumn(name = "username", referencedColumnName = "username", insertable = false, updatable = false)

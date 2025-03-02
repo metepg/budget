@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,10 +17,12 @@ public interface MonthlyRecordRepository extends JpaRepository<MonthlyRecord, In
     List<MonthlyRecord> findAllByUsername(String username);
 
     @Query("""
-                SELECT COALESCE(SUM(CASE WHEN i.type = 'INCOME' THEN i.amount ELSE 0 END), 0) -
-                       COALESCE(SUM(CASE WHEN i.type = 'EXPENSE' THEN i.amount ELSE 0 END), 0)
-                FROM MonthlyRecord i
+                SELECT i FROM MonthlyRecord i
                 WHERE i.username = :username
+                AND i.recurring = true
             """)
-    List<MonthlyRecord> findAllByUsernameAndRecurringTrue(String username);
+    List<MonthlyRecord> findAllByUsernameAndRecurringTrue(@Param("username") String username);
+
+    List<MonthlyRecord> findAllByUsernameAndDateBetween(String username, LocalDate startDate, LocalDate endDate);
+
 }

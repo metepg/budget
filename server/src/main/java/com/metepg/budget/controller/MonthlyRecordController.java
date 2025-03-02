@@ -36,9 +36,8 @@ public class MonthlyRecordController {
     }
 
     @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<MonthlyRecordResponseDTO>> saveIncomes(@Valid @RequestBody List<MonthlyRecord> monthlyRecord) {
-        List<MonthlyRecordResponseDTO> savedIncome = monthlyRecordService.saveIncomes(monthlyRecord);
-        return ResponseEntity.ok(savedIncome);
+    public List<MonthlyRecordResponseDTO> saveIncomes(@Valid @RequestBody List<MonthlyRecord> monthlyRecord) {
+        return monthlyRecordService.saveIncomes(monthlyRecord);
     }
 
     @DeleteMapping("/{id}")

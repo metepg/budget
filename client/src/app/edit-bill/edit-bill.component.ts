@@ -9,7 +9,7 @@ import { CategoryService } from '../../services/category/category.service';
 import { IncomeService } from '../../services/income/income.service';
 import { BudgetService } from '../../services/budget/budget.service';
 import { LocalStorageService } from '../../services/local-storage/local-storage.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { isValidDescription } from '../../utils/formValidationUtils';
 import { Card } from 'primeng/card';
 import { SelectButton } from 'primeng/selectbutton';
@@ -47,7 +47,7 @@ interface TransactionTypeOption {
     Tooltip,
     NgIf
   ],
-  styleUrls: ['./edit-bill.component.scss']
+  styleUrls: ['./edit-bill.component.css']
 })
 
 export class EditBillComponent implements OnInit, OnDestroy {
@@ -69,12 +69,13 @@ export class EditBillComponent implements OnInit, OnDestroy {
     private messageService: MessageService,
     private budgetService: BudgetService,
     private localStorageService: LocalStorageService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {
     this.billForm = this.formBuilder.group({
       amount: new FormControl<number | null>(null, [Validators.required, Validators.min(1)]),
-      transactionType: new FormControl<MonthlyRecordType>(MonthlyRecordType.EXPENSE, [Validators.required]),
-      category: new FormControl<number | null>(null, [Validators.required]),
+      type: new FormControl<MonthlyRecordType>(MonthlyRecordType.EXPENSE, [Validators.required]),
+      category: new FormControl<Category | null>(null, [Validators.required]),
       description: new FormControl<string | null>('', [Validators.required, isValidDescription as ValidatorFn]),
       recurring: new FormControl<boolean>(false),
       date: new FormControl<Date | null>(new Date(), [Validators.required])
@@ -84,18 +85,16 @@ export class EditBillComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.user = this.localStorageService.getUser();
 
-    // Get categories
     this.categoryService.getAll().subscribe(categories => {
       this.categories = categories.sort((a, b) => a.index - b.index);
-    });
 
-    // Get bill ID from route
-    this.route.paramMap.subscribe(params => {
-      const id = params.get('id');
-      if (id) {
-        this.billId = +id;
-        this.loadBill(this.billId);
-      }
+      this.route.paramMap.subscribe(params => {
+        const id = params.get('id');
+        if (id) {
+          this.billId = +id;
+          this.loadBill(this.billId);
+        }
+      });
     });
 
     this.transactionTypeOptions = [
@@ -106,7 +105,12 @@ export class EditBillComponent implements OnInit, OnDestroy {
 
   private loadBill(id: number): void {
     this.incomeService.getBill(id).subscribe(bill => {
-      this.billForm.patchValue(bill);
+      if (!bill) return;
+      const category = this.categories.find(c => c.id === bill.category?.id);
+      this.billForm.patchValue({
+        ...bill,
+        category: category?.id
+      });
     });
   }
 
@@ -117,6 +121,7 @@ export class EditBillComponent implements OnInit, OnDestroy {
 
   onSubmit(): void {
     this.submitButtonIsDisabled = true;
+    const category = this.categories.find(c => c.id === this.billForm.value.category)
 
     if (!this.billForm.valid || !this.user) {
       return;
@@ -125,21 +130,16 @@ export class EditBillComponent implements OnInit, OnDestroy {
     const billData = {
       ...this.billForm.value,
       id: this.billId,
+      category,
       username: this.user.username
     };
+    console.log(billData)
 
     this.incomeService.saveIncome([billData]).subscribe(_response => {
       this.messageService.add({ severity: 'success', summary: 'Tallennus onnistui', life: 1500 });
       this.budgetService.notifyBudgetChange();
-      this.billForm.reset({
-        amount: null,
-        transactionType: MonthlyRecordType.EXPENSE,
-        category: null,
-        description: '',
-        recurring: false,
-        date: new Date()
-      });
       this.submitButtonIsDisabled = false;
+      this.router.navigate(['/profile']);
     });
   }
 
@@ -155,6 +155,7 @@ export class EditBillComponent implements OnInit, OnDestroy {
       accept: () => {
         this.incomeService.deleteBill(this.billId!).subscribe(() => {
           this.messageService.add({ severity: 'success', summary: 'Tapahtuma poistettu', life: 1500 });
+          this.router.navigate(['/profile']);
         });
       }
     });

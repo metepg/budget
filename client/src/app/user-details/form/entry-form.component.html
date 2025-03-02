@@ -1,14 +1,4 @@
 <form [formGroup]="entryForm" (ngSubmit)="save()" style="max-width: 500px">
-  <p-button
-    [style]="{ 'margin-bottom': '10px'}"
-    (onClick)="save()"
-    [label]="saveBtnLabel"
-    severity="primary"
-    [raised]="true"
-    [disabled]="!isDirty"
-    pTooltip="Täytä kuvaus ja määrä tai poista tyhjä rivi"
-    size="small">
-  </p-button>
   <p-table [value]="entryControls.controls" class="compact-table">
     <ng-template pTemplate="header">
       <tr>

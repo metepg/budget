@@ -1,6 +1,7 @@
 package com.metepg.budget.dto;
 
 import com.metepg.budget.enums.MonthlyRecordEnum;
+import com.metepg.budget.model.Category;
 import com.metepg.budget.model.MonthlyRecord;
 
 import java.time.LocalDateTime;
@@ -12,7 +13,8 @@ public record MonthlyRecordResponseDTO(
         long amount,
         LocalDateTime recordedAt,
         MonthlyRecordEnum type,
-        boolean recurring
+        boolean recurring,
+        Category category
 ) {
     public MonthlyRecordResponseDTO(MonthlyRecord monthlyRecord) {
         this(
@@ -22,7 +24,8 @@ public record MonthlyRecordResponseDTO(
                 monthlyRecord.getAmount() / 100,
                 monthlyRecord.getModifiedAt(),
                 monthlyRecord.getType(),
-                monthlyRecord.getRecurring()
+                monthlyRecord.getRecurring(),
+                monthlyRecord.getCategory()
         );
     }
 }

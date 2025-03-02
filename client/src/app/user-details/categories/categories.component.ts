@@ -43,7 +43,7 @@ export class CategoriesComponent implements OnInit, OnChanges {
   }
 
   addCategory() {
-    this.categories = [...this.categories, { index: this.categories.length, description: '' }];
+    this.categories = [...this.categories, { index: this.categories.length, description: '', id: undefined }];
   }
 
   onCategoriesReorder(event: any) {

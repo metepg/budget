@@ -39,6 +39,7 @@ CREATE TABLE monthly_budgets
     total_income       BIGINT NOT NULL DEFAULT 0,
     total_expense      BIGINT NOT NULL DEFAULT 0,
     cumulative_savings BIGINT NOT NULL DEFAULT 0,
+    remaining_budget   BIGINT NOT NULL DEFAULT 0,
     FOREIGN KEY (username) REFERENCES users (username) ON DELETE CASCADE,
     UNIQUE (username, month)
 );

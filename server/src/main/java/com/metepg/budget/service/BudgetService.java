@@ -1,11 +1,13 @@
 package com.metepg.budget.service;
 
 import com.metepg.budget.enums.MonthlyRecordEnum;
+import com.metepg.budget.model.MonthlyBudget;
 import com.metepg.budget.model.MonthlyRecord;
 import com.metepg.budget.model.User;
-import com.metepg.budget.model.MonthlyBudget;
 import com.metepg.budget.repository.MonthlyBudgetRepository;
+import com.metepg.budget.repository.MonthlyRecordRepository;
 import com.metepg.budget.util.SecurityUtil;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,12 +17,14 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.temporal.TemporalAdjusters;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class BudgetService {
 
     private final MonthlyBudgetRepository monthlyBudgetRepository;
+    private final MonthlyRecordRepository monthlyRecordRepository;
 
     public BigDecimal getCurrentBudget(String budgetType) {
         User user = SecurityUtil.getCurrentUser();
@@ -48,8 +52,17 @@ public class BudgetService {
     public BigDecimal getDailyBudget(MonthlyBudget budget) {
         YearMonth currentMonth = YearMonth.now();
         int totalDaysInMonth = currentMonth.lengthOfMonth();
+
+        // Monthly available budget
         BigDecimal monthlyAvailableBudget = calculateMonthlyAvailableBudget(budget);
-        return monthlyAvailableBudget.divide(BigDecimal.valueOf(totalDaysInMonth), 2, RoundingMode.HALF_UP);
+
+        // Convert remaining budget from cents to euros
+        BigDecimal remainingBudget = BigDecimal.valueOf(budget.getRemainingBudget())
+                .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+
+        // Calculate daily budget with rollover from previous days
+        return monthlyAvailableBudget.add(remainingBudget)
+                .divide(BigDecimal.valueOf(totalDaysInMonth), 2, RoundingMode.HALF_UP);
     }
 
     private int getDaysInCurrentWeek() {
@@ -80,8 +93,25 @@ public class BudgetService {
         return totalIncome.subtract(totalExpense);
     }
 
+    @Transactional
     public void updateBudgetAfterTransaction(MonthlyRecord record) {
-        LocalDate monthStart = record.getModifiedAt().toLocalDate().withDayOfMonth(1);
+        YearMonth ym = YearMonth.from(record.getModifiedAt());
+        LocalDate monthStart = ym.atDay(1);
+        LocalDate monthEnd = ym.atEndOfMonth();
+
+        // Get records based on the 'date' field, not modifiedAt.
+        List<MonthlyRecord> records = monthlyRecordRepository
+                .findAllByUsernameAndDateBetween(record.getUsername(), monthStart, monthEnd);
+
+        long totalIncome = records.stream()
+                .filter(r -> MonthlyRecordEnum.INCOME.equals(r.getType()))
+                .mapToLong(MonthlyRecord::getAmount)
+                .sum();
+
+        long totalExpense = records.stream()
+                .filter(r -> MonthlyRecordEnum.EXPENSE.equals(r.getType()))
+                .mapToLong(MonthlyRecord::getAmount)
+                .sum();
 
         MonthlyBudget budget = monthlyBudgetRepository
                 .findByUsernameAndMonth(record.getUsername(), monthStart)
@@ -89,28 +119,16 @@ public class BudgetService {
                     MonthlyBudget newBudget = new MonthlyBudget();
                     newBudget.setUsername(record.getUsername());
                     newBudget.setMonth(monthStart);
-                    newBudget.setTotalIncome(0L);
-                    newBudget.setTotalExpense(0L);
-                    newBudget.setCumulativeSavings(getPreviousCumulativeSavings(record.getUsername(), monthStart));
-                    return monthlyBudgetRepository.save(newBudget);
+                    newBudget.setRemainingBudget(0L);
+                    // Initialize cumulativeSavings if needed.
+                    return newBudget;
                 });
 
-        if (MonthlyRecordEnum.INCOME.equals(record.getType())) {
-            budget.setTotalIncome(budget.getTotalIncome() + record.getAmount());
-        } else if (MonthlyRecordEnum.EXPENSE.equals(record.getType())) {
-            budget.setTotalExpense(budget.getTotalExpense() + record.getAmount());
-        }
-
-        budget.setCumulativeSavings(
-                budget.getCumulativeSavings() + budget.getTotalIncome() - budget.getTotalExpense()
-        );
+        budget.setTotalIncome(totalIncome);
+        budget.setTotalExpense(totalExpense);
+        budget.setCumulativeSavings(totalIncome - totalExpense);
 
         monthlyBudgetRepository.save(budget);
     }
 
-    private long getPreviousCumulativeSavings(String username, LocalDate currentMonth) {
-        return monthlyBudgetRepository.findLatestBudgetBefore(username, currentMonth)
-                .map(MonthlyBudget::getCumulativeSavings)
-                .orElse(0L);
-    }
 }

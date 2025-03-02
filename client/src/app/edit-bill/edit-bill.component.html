@@ -4,7 +4,7 @@
     <form (ngSubmit)="onSubmit()" [formGroup]="billForm">
       <p-select-button
         [options]="transactionTypeOptions"
-        formControlName="transactionType"
+        formControlName="type"
         optionLabel="label"
         optionValue="value">
       </p-select-button>
@@ -65,7 +65,7 @@
           formControlName="category"
           placeholder="Kategoria"
           optionLabel="description"
-          optionValue="index">
+          optionValue="id">
         </p-select>
       </div>
 

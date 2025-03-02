@@ -6,7 +6,6 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
 import { MonthlyRecord } from '../../../models/MonthlyRecord';
-import { Tooltip } from 'primeng/tooltip';
 import { deepEqual } from '../../../utils/utils';
 import MonthlyRecordType from '../../../enums/MonthlyRecordType';
 import { Router } from '@angular/router';
@@ -24,7 +23,7 @@ import { Router } from '@angular/router';
     InputNumberModule,
     ButtonModule,
     TableModule,
-    Tooltip,
+
   ]
 })
 export class EntryFormComponent implements OnInit, OnChanges {
@@ -33,7 +32,6 @@ export class EntryFormComponent implements OnInit, OnChanges {
   @Input() user: { username: string };
   @Output() entriesUpdated = new EventEmitter<MonthlyRecord[]>();
   @Output() removeEntryEmitter = new EventEmitter<MonthlyRecord>();
-  saveBtnLabel: string;
 
   entryForm: FormGroup = this.fb.group({
     entries: this.fb.array([])
@@ -44,7 +42,6 @@ export class EntryFormComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.populateForm();
-    this.saveBtnLabel = this.type === MonthlyRecordType.INCOME ? 'Tallenna vakiotulot' : 'Tallenna vakiomenot';
   }
 
   ngOnChanges(changes: SimpleChanges): void {
