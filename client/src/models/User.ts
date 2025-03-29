@@ -1,7 +1,7 @@
-import { MonthlyRecord } from './MonthlyRecord';
+import { Bill } from './Bill';
 
 export interface User {
   enabled: boolean;
-  income: MonthlyRecord[];
+  income: Bill[];
   username: string;
 }

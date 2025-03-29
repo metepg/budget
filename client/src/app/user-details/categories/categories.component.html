@@ -12,8 +12,8 @@
 
 @if (categories.length > 0) {
   <p-orderList
+    [responsive]="true"
     [value]="categories"
-    [dragdrop]="true"
     [listStyle]="{ 'max-height': '100vh' }"
     (onReorder)="onCategoriesReorder($event)">
     <ng-template let-category let-i="index" pTemplate="item">

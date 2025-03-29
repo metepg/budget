@@ -8,11 +8,11 @@
     <p-tabPanel tabindex="0" header="TULOT">
       <app-entry-form
           #incomeForm
-          [type]="MonthlyRecordType.INCOME"
+          [type]="BillType.INCOME"
           [user]="user"
           [records]="incomes"
           (removeEntryEmitter)="removeEntry($event)"
-          (entriesUpdated)="updateEntries($event, MonthlyRecordType.INCOME)">
+          (entriesUpdated)="updateEntries($event, BillType.INCOME)">
       </app-entry-form>
     </p-tabPanel>
 
@@ -20,10 +20,10 @@
     <p-tabPanel tabindex="1" header="MENOT">
       <app-entry-form
           #expenseForm
-          [type]="MonthlyRecordType.EXPENSE"
+          [type]="BillType.EXPENSE"
           [user]="user"
           [records]="expenses"
-          (entriesUpdated)="updateEntries($event, MonthlyRecordType.EXPENSE)">
+          (entriesUpdated)="updateEntries($event, BillType.EXPENSE)">
       </app-entry-form>
     </p-tabPanel>
 

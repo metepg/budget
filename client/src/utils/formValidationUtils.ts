@@ -2,9 +2,7 @@ import { AbstractControl, ValidationErrors } from '@angular/forms';
 import { Category } from '../models/Category';
 
 export function isValidCategory(control: AbstractControl, categories: Category[]): ValidationErrors | null {
-  console.log(categories)
-  return null;
-  // return Object.values(categories).includes(control.value) ? null : { invalidCategory: true };
+  return Object.values(categories).includes(control.value) ? null : { invalidCategory: true };
 }
 
 export function isValidDescription(control: AbstractControl): ValidationErrors | null {

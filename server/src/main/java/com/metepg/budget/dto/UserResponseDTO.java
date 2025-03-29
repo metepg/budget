@@ -2,6 +2,6 @@ package com.metepg.budget.dto;
 
 public record UserResponseDTO(
         String username,
-        MonthlyRecordResponseDTO income,
+        BillResponseDTO income,
         boolean enabled
 ) {}

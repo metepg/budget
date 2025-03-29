@@ -1,5 +1,5 @@
 package com.metepg.budget.enums;
 
-public enum MonthlyRecordEnum {
+public enum BillEnum {
     INCOME, EXPENSE
 }

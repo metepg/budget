@@ -1,12 +1,14 @@
-import MonthlyRecordType from '../enums/MonthlyRecordType';
+import BillType from '../enums/BillType';
+import { Category } from './Category';
 
 export interface Bill {
-  id?: number;
-  amount?: number;
-  categoryId: number;
+  id: number | null;
   date: Date;
-  type: MonthlyRecordType;
+  category: Category;
+  username: string;
+  type: BillType;
   description: string;
+  amount: number;
   recurring: boolean;
-  ownerName: string
+  recordedAt?: string;
 }

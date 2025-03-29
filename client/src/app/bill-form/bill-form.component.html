@@ -1,6 +1,6 @@
 <main style="display: flex; justify-content: center">
   <p-card [style.margin-top]="'3vh'">
-    <h2>{{ billFormBuilder.get('transactionType')?.value === MonthlyRecordType.INCOME ? 'Lisää tulo' : 'Lisää meno' }}</h2>
+    <h2>{{ billFormBuilder.get('transactionType')?.value === BillType.INCOME ? 'Lisää tulo' : 'Lisää meno' }}</h2>
     <form (ngSubmit)="onSubmit()" [formGroup]="billFormBuilder">
       <p-select-button
         [options]="transactionTypeOptions"
@@ -14,6 +14,7 @@
       <label for="date">Päivämäärä</label>
       <br/>
       <p-date-picker
+        touchUI="true"
         appendTo="body"
         size="small"
         id="date"

@@ -21,9 +21,10 @@ import { SelectButton } from 'primeng/selectbutton';
 import { DatePicker } from 'primeng/datepicker';
 import { Tooltip } from 'primeng/tooltip';
 import { Checkbox } from 'primeng/checkbox';
-import { IncomeService } from '../../services/income/income.service';
+import { BillService } from '../../services/bill/bill.service';
 import { BudgetService } from '../../services/budget/budget.service';
-import MonthlyRecordType from '../../enums/MonthlyRecordType';
+import BillType from '../../enums/BillType';
+import { fixDateToFinnishTime } from '../../utils/dateUtils';
 
 interface FormCategory {
   id?: number;
@@ -33,7 +34,7 @@ interface FormCategory {
 
 interface TransactionTypeOption {
   label: string;
-  value: MonthlyRecordType;
+  value: BillType;
 }
 
 @Component({
@@ -61,6 +62,7 @@ interface TransactionTypeOption {
 
 export class BillFormComponent implements OnInit, OnDestroy {
   private subscription: Subscription;
+  protected readonly BillType = BillType;
   categories: Category[] = [];
   formCategories: FormCategory[] = [];
   submitButtonIsDisabled: boolean;
@@ -81,7 +83,7 @@ export class BillFormComponent implements OnInit, OnDestroy {
     description: FormControl<string | null>;
     date: FormControl<Date | null>;
     recurring: FormControl<boolean | null>;
-    transactionType: FormControl<MonthlyRecordType | null>;
+    transactionType: FormControl<BillType | null>;
   }>;
   today: Date = new Date();
 
@@ -89,7 +91,7 @@ export class BillFormComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private confirmationService: ConfirmationService,
     private categoryService: CategoryService,
-    private incomeService: IncomeService,
+    private incomeService: BillService,
     private messageService: MessageService,
     private budgetService: BudgetService,
     private localStorageService: LocalStorageService
@@ -103,8 +105,8 @@ export class BillFormComponent implements OnInit, OnDestroy {
         { value: this.amount, disabled: this.disabledFields.includes('amount') },
         [Validators.required, Validators.min(1)]
       ),
-      transactionType: new FormControl<MonthlyRecordType | null>(
-        MonthlyRecordType.EXPENSE,
+      transactionType: new FormControl<BillType | null>(
+        BillType.EXPENSE,
         [Validators.required]
       ),
       category: new FormControl<Category | null>(
@@ -137,8 +139,8 @@ export class BillFormComponent implements OnInit, OnDestroy {
     });
 
     this.transactionTypeOptions = [
-      { label: 'Meno', value: MonthlyRecordType.EXPENSE },
-      { label: 'Tulo', value: MonthlyRecordType.INCOME }
+      { label: 'Tulo', value: BillType.INCOME },
+      { label: 'Meno', value: BillType.EXPENSE }
     ];
   }
 
@@ -154,28 +156,27 @@ export class BillFormComponent implements OnInit, OnDestroy {
     const currentCategory = this.formCategories.find(c => c.id === category);
     if (!currentCategory) return;
 
-    if (!this.billFormBuilder.valid || !this.user || !amount || !description || !transactionType) {
+    if (!this.billFormBuilder.valid || !this.user || !amount || !description || !transactionType || !date) {
       return;
     }
-
-    const monthlyRecord = {
+    if (!this.user.username) return;
+    const bill = {
       id: null,
       amount,
       username: this.user.username,
       category: currentCategory!,
-      date: date!,
+      date: fixDateToFinnishTime(date),
       type: transactionType,
       recurring: recurring!,
       description
     };
 
-    this.incomeService.saveIncome([monthlyRecord]).subscribe(response => {
-      console.log(response);
+    this.incomeService.saveIncome([bill]).subscribe(response => {
       this.messageService.add({ severity: 'success', summary: 'Tallennus onnistui', life: 1500 });
       this.budgetService.notifyBudgetChange();
       this.billFormBuilder.reset({
         amount: null,
-        transactionType: MonthlyRecordType.EXPENSE,
+        transactionType: BillType.EXPENSE,
         category: null,
         description: '',
         recurring: false,
@@ -206,5 +207,4 @@ export class BillFormComponent implements OnInit, OnDestroy {
     }
   }
 
-  protected readonly MonthlyRecordType = MonthlyRecordType;
 }

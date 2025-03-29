@@ -3,8 +3,8 @@ import { Router, RouterOutlet } from '@angular/router';
 import { UserService } from '../services/user/user.service';
 import { User } from '../models/User';
 import { NavbarComponent } from './navbar/navbar.component';
-import { MonthlyRecord } from '../models/MonthlyRecord';
-import { IncomeService } from '../services/income/income.service';
+import { Bill } from '../models/Bill';
+import { BillService } from '../services/bill/bill.service';
 import { filter, switchMap, tap } from 'rxjs';
 import { Toast } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -22,12 +22,12 @@ import { PrimeNG } from 'primeng/config';
 export class AppComponent implements OnInit {
 
   user: User | null = null;
-  records: MonthlyRecord[] = [];
+  records: Bill[] = [];
 
   constructor(
     private primengConfig: PrimeNG,
     private userService: UserService,
-    private incomeService: IncomeService,
+    private incomeService: BillService,
     private localStorageService: LocalStorageService,
     private router: Router
   ) {}

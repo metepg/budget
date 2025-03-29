@@ -1,15 +1,15 @@
 import { User } from '../../models/User';
 import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
-import { MonthlyRecord } from '../../models/MonthlyRecord';
+import { Bill } from '../../models/Bill';
 import { TabPanel, TabView } from 'primeng/tabview';
 import { EntryFormComponent } from './form/entry.form.component';
 import { MessageService, PrimeTemplate } from 'primeng/api';
-import { IncomeService } from '../../services/income/income.service';
+import { BillService } from '../../services/bill/bill.service';
 import { CategoriesComponent } from './categories/categories.component';
 import { Category } from '../../models/Category';
 import { CategoryService } from '../../services/category/category.service';
 import { LocalStorageService } from '../../services/local-storage/local-storage.service';
-import MonthlyRecordType from '../../enums/MonthlyRecordType';
+import BillType from '../../enums/BillType';
 import { BudgetService } from '../../services/budget/budget.service';
 import { FormsModule } from '@angular/forms';
 import { BudgetComponent } from '../budget/budget.component';
@@ -35,25 +35,25 @@ export class UserDetailsForm implements OnInit {
   @ViewChild('categoryForm') categoryForm!: CategoriesComponent;
   @Output() firstLoginComplete = new EventEmitter();
 
-  protected readonly MonthlyRecordType = MonthlyRecordType;
+  protected readonly BillType = BillType;
   activeTabIndex = 0;
   user: User;
-  records: MonthlyRecord[] = [];
+  records: Bill[] = [];
   categories: Category[] = [];
 
-  get incomes(): MonthlyRecord[] {
+  get incomes(): Bill[] {
     return this.records
-      ?.filter(entry => entry.type === MonthlyRecordType.INCOME)
+      ?.filter(entry => entry.type === BillType.INCOME)
       .sort((a, b) => (a.id ?? 0) - (b.id ?? 0)) || [];
   }
 
-  get expenses(): MonthlyRecord[] {
+  get expenses(): Bill[] {
     return this.records
-      ?.filter(entry => entry.type === MonthlyRecordType.EXPENSE)
+      ?.filter(entry => entry.type === BillType.EXPENSE)
       .sort((a, b) => (a.id ?? 0) - (b.id ?? 0)) || [];
   }
 
-  constructor(private incomeService: IncomeService,
+  constructor(private incomeService: BillService,
               private messageService: MessageService,
               private categoryService: CategoryService,
               private budgetService: BudgetService,
@@ -73,7 +73,7 @@ export class UserDetailsForm implements OnInit {
     });
   }
 
-  removeEntry(entry: MonthlyRecord) {
+  removeEntry(entry: Bill) {
     this.incomeService.removeIncome(entry).subscribe(_e => {
       this.records = this.records.filter(e => e.id !== entry.id);
       this.messageService.add({ severity: 'success', summary: 'Poistaminen onnistui', life: 1500 });
@@ -81,7 +81,7 @@ export class UserDetailsForm implements OnInit {
     });
   }
 
-  updateEntries(updatedEntries: MonthlyRecord[], type: MonthlyRecordType) {
+  updateEntries(updatedEntries: Bill[], type: BillType) {
     this.incomeService.saveIncome(updatedEntries).subscribe(response => {
       this.records = this.records.filter(entry => entry.type !== type);
       this.records = [...this.records, ...response];

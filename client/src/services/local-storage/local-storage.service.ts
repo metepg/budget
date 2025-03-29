@@ -16,6 +16,15 @@ export class LocalStorageService {
     return userFromStorage ? JSON.parse(userFromStorage) : null;
   }
 
+  getSelectedMonth(): number | null {
+    const selectedMonth = localStorage.getItem('selectedMonth');
+    return selectedMonth ? JSON.parse(selectedMonth) : null;
+  }
+
+  setSelectedMonth(month: number) {
+    localStorage.setItem('selectedMonth', JSON.stringify(month));
+  }
+
   setCategories(categories: Category[]) {
     localStorage.setItem('categories', JSON.stringify(categories));
   }

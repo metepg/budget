@@ -1,6 +1,6 @@
 package com.metepg.budget.model;
 
-import com.metepg.budget.enums.MonthlyRecordEnum;
+import com.metepg.budget.enums.BillEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -22,11 +22,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "monthly_records")
+@Table(name = "bills")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MonthlyRecord {
+public class Bill {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,7 +41,7 @@ public class MonthlyRecord {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private MonthlyRecordEnum type;
+    private BillEnum type;
 
     @NotNull
     @Size(min = 1, message = "Description cannot be empty")

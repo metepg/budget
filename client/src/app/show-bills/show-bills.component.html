@@ -1,0 +1,38 @@
+<br/>
+<p-select
+  [options]="months"
+  optionLabel="label"
+  optionValue="value"
+  (onChange)="getBills()"
+  placeholder="Valitse kuukausi"
+  [(ngModel)]="selectedMonth"
+  (ngModelChange)="setSelectedMonth()">
+</p-select>
+<br/>
+<br/>
+<p-accordion [multiple]="true" transitionOptions="0ms">
+  <p-accordion-panel *ngFor="let bill of (bills$ | async); let i = index" [value]="i.toString()" style="margin-bottom: 10px;">
+    <p-accordion-header>
+      <div class="header-content">
+        <span class="description">{{ bill.description }}</span>
+        <span class="amount">{{ bill.amount | currency:'EUR':'symbol':'1.2-2' }}</span>
+      </div>
+    </p-accordion-header>
+    <p-accordion-content>
+      <div class="bill-details">
+        <div class="bill-row"><span class="bill-label">Kuvaus:</span> <span class="bill-value">{{ bill.description }}</span></div>
+        <div class="bill-row"><span class="bill-label">Kategoria:</span> <span class="bill-value">{{ bill.category.description }}</span></div>
+        <div class="bill-row"><span class="bill-label">Määrä:</span> <span class="bill-value">{{ bill.amount | currency:'EUR':'symbol':'1.2-2' }}</span></div>
+        <div class="bill-row"><span class="bill-label">Tyyppi:</span> <span class="bill-value">{{ bill.type === BillType.INCOME ? 'Tulo' : 'Meno' }}</span></div>
+        <div class="bill-row"><span class="bill-label">Päivämäärä:</span> <span class="bill-value">{{ bill.date | date:'dd.MM.yyyy' }}</span></div>
+        <p-button
+          type="button"
+          icon="pi pi-pen-to-square"
+          text="true"
+          severity="contrast"
+          (click)="edit(bill)">
+        </p-button>
+      </div>
+    </p-accordion-content>
+  </p-accordion-panel>
+</p-accordion>

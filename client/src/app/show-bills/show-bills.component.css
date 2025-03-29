@@ -1,0 +1,42 @@
+.bill-details {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 5px 15px;
+  align-items: center;
+  max-width: 400px;
+}
+
+.bill-row {
+  display: contents;
+}
+
+.bill-label {
+  font-weight: bold;
+  text-align: left;
+  min-width: 120px;
+}
+
+.bill-value {
+  text-align: left;
+  word-break: break-word;
+}
+
+.header-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  align-items: center;
+  width: 100%;
+  gap: 10px;
+}
+
+.description {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  text-align: left;
+}
+
+.amount {
+  text-align: left;
+  font-weight: bold;
+  white-space: nowrap;
+}

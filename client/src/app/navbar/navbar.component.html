@@ -23,21 +23,21 @@
     </p-button>
     <p *ngIf="currentBudget$ | async as currentBudget"
        [style.color]="(currentBudget ?? 0) >= 0 ? 'green' : 'red'">
-      {{ currentBudget > 0 ? '+' : '' }}{{ currentBudget | number: '1.2-2' }}€
+      {{ currentBudget > 0 ? '+' : '' }}{{ currentBudget | number: '1.2-2' }}€ / {{ selectedBudget }}
     </p>
     <p-button
       class="checkButton"
       icon="pi pi-chart-bar"
       [rounded]="true"
       (onClick)="showTab(View.SHOW_STATISTICS)"
-      severity="contrast">
+      severity="primary">
     </p-button>
     <p-button
       class="checkButton"
-      icon="pi pi-user"
+      icon="pi pi-cog"
       [rounded]="true"
       (onClick)="showTab(View.SHOW_PROFILE)"
-      severity="primary">
+      severity="contrast">
     </p-button>
   </div>
 </p-toolbar>

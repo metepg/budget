@@ -26,7 +26,6 @@ export class BudgetComponent implements OnInit {
   }
 
   onBudgetChange(newBudget: string) {
-    console.log("hepl")
     this.selectedBudget = newBudget;
     this.saveSelection();
   }

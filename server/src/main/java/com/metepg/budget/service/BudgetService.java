@@ -1,11 +1,11 @@
 package com.metepg.budget.service;
 
-import com.metepg.budget.enums.MonthlyRecordEnum;
+import com.metepg.budget.enums.BillEnum;
 import com.metepg.budget.model.MonthlyBudget;
-import com.metepg.budget.model.MonthlyRecord;
+import com.metepg.budget.model.Bill;
 import com.metepg.budget.model.User;
 import com.metepg.budget.repository.MonthlyBudgetRepository;
-import com.metepg.budget.repository.MonthlyRecordRepository;
+import com.metepg.budget.repository.BillRepository;
 import com.metepg.budget.util.SecurityUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ import java.util.List;
 public class BudgetService {
 
     private final MonthlyBudgetRepository monthlyBudgetRepository;
-    private final MonthlyRecordRepository monthlyRecordRepository;
+    private final BillRepository billRepository;
 
     public BigDecimal getCurrentBudget(String budgetType) {
         User user = SecurityUtil.getCurrentUser();
@@ -94,23 +94,23 @@ public class BudgetService {
     }
 
     @Transactional
-    public void updateBudgetAfterTransaction(MonthlyRecord record) {
-        YearMonth ym = YearMonth.from(record.getModifiedAt());
+    public void updateBudgetAfterTransaction(Bill record) {
+        YearMonth ym = YearMonth.from(record.getDate());
         LocalDate monthStart = ym.atDay(1);
         LocalDate monthEnd = ym.atEndOfMonth();
 
         // Get records based on the 'date' field, not modifiedAt.
-        List<MonthlyRecord> records = monthlyRecordRepository
+        List<Bill> records = billRepository
                 .findAllByUsernameAndDateBetween(record.getUsername(), monthStart, monthEnd);
 
         long totalIncome = records.stream()
-                .filter(r -> MonthlyRecordEnum.INCOME.equals(r.getType()))
-                .mapToLong(MonthlyRecord::getAmount)
+                .filter(r -> BillEnum.INCOME.equals(r.getType()))
+                .mapToLong(Bill::getAmount)
                 .sum();
 
         long totalExpense = records.stream()
-                .filter(r -> MonthlyRecordEnum.EXPENSE.equals(r.getType()))
-                .mapToLong(MonthlyRecord::getAmount)
+                .filter(r -> BillEnum.EXPENSE.equals(r.getType()))
+                .mapToLong(Bill::getAmount)
                 .sum();
 
         MonthlyBudget budget = monthlyBudgetRepository

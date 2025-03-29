@@ -5,9 +5,9 @@ import { ButtonModule } from 'primeng/button';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
-import { MonthlyRecord } from '../../../models/MonthlyRecord';
+import { Bill } from '../../../models/Bill';
 import { deepEqual } from '../../../utils/utils';
-import MonthlyRecordType from '../../../enums/MonthlyRecordType';
+import BillType from '../../../enums/BillType';
 import { Router } from '@angular/router';
 
 @Component({
@@ -27,11 +27,11 @@ import { Router } from '@angular/router';
   ]
 })
 export class EntryFormComponent implements OnInit, OnChanges {
-  @Input() records: MonthlyRecord[] = [];
-  @Input() type: MonthlyRecordType;
+  @Input() records: Bill[] = [];
+  @Input() type: BillType;
   @Input() user: { username: string };
-  @Output() entriesUpdated = new EventEmitter<MonthlyRecord[]>();
-  @Output() removeEntryEmitter = new EventEmitter<MonthlyRecord>();
+  @Output() entriesUpdated = new EventEmitter<Bill[]>();
+  @Output() removeEntryEmitter = new EventEmitter<Bill>();
 
   entryForm: FormGroup = this.fb.group({
     entries: this.fb.array([])
@@ -63,8 +63,8 @@ export class EntryFormComponent implements OnInit, OnChanges {
     });
   }
 
-  // Accept a Partial<MonthlyRecord> so we can supply default values
-  createEntryGroup(record: Partial<MonthlyRecord>): FormGroup {
+  // Accept a Partial<Bill> so we can supply default values
+  createEntryGroup(record: Partial<Bill>): FormGroup {
     return this.fb.group({
       id: [record.id ?? null],
       username: [record.username ?? (this.user ? this.user.username : '')],
@@ -96,16 +96,5 @@ export class EntryFormComponent implements OnInit, OnChanges {
   edit(index: number): void {
     const bill = this.records[index];
     this.router.navigate([`/bills/${bill.id}`]);
-    // const entry = this.entryControls.at(index);
-    // const descriptionControl = entry.get('description');
-    // const amountControl = entry.get('amount');
-    //
-    // if (descriptionControl?.disabled) {
-    //   descriptionControl.enable();
-    //   amountControl?.enable();
-    // } else {
-    //   descriptionControl?.disable();
-    //   amountControl?.disable();
-    // }
   }
 }

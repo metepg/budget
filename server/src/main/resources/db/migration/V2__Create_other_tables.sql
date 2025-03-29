@@ -7,7 +7,7 @@ CREATE TABLE categories
     FOREIGN KEY (username) REFERENCES users (username) ON DELETE CASCADE
 );
 
-CREATE TABLE monthly_records
+CREATE TABLE bills
 (
     id          SERIAL PRIMARY KEY,
     date        DATE      NOT NULL DEFAULT CURRENT_DATE,

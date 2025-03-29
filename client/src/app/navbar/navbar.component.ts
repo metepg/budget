@@ -20,6 +20,7 @@ import { LocalStorageService } from '../../services/local-storage/local-storage.
 export class NavbarComponent implements OnInit {
   private selectedBudget$ = new BehaviorSubject<string | null>(null);
   currentBudget$: Observable<number>;
+  selectedBudget: string;
 
   private routeMap = {
     [View.NEW_BILL]: 'bills/new',
@@ -45,6 +46,9 @@ export class NavbarComponent implements OnInit {
       startWith(this.localStorageService.getSelectedBudget() ?? 'week'),
       switchMap(() => {
         const selectedBudget = this.localStorageService.getSelectedBudget() ?? 'week';
+        if (selectedBudget === 'week') this.selectedBudget = 'VKO';
+        if (selectedBudget === 'day') this.selectedBudget = 'PV';
+        if (selectedBudget === 'month') this.selectedBudget = 'KK';
         return this.budgetService.getCurrent(selectedBudget);
       })
     );
