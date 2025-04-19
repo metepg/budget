@@ -6,6 +6,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { providePrimeNG } from 'primeng/config';
 import Lara from '@primeng/themes/lara';
 
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideHttpClient(),
@@ -18,8 +19,7 @@ export const appConfig: ApplicationConfig = {
       theme: {
         preset: Lara,
         options: {
-          dark: false,
-          automaticDetection: false
+          darkModeSelector: 'none'
         }
       }
     })
