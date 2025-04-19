@@ -65,7 +65,7 @@
     </dependencies>
 
     <build>
-        <finalName>budget-app</finalName>
+        <finalName>budget-app-{project.version}</finalName>
         <plugins>
             <plugin>
                 <groupId>com.github.eirslett</groupId>
@@ -138,6 +138,15 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>12.1.1</version>
+                <configuration>
+                    <format>XML</format>
+                    <outputDirectory>${project.build.directory}</outputDirectory>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
