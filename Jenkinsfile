@@ -31,6 +31,10 @@ pipeline {
                           branches         : [[name: "${BRANCH_OR_TAG}"]],
                           userRemoteConfigs: [[url: 'https://github.com/metepg/budget.git']]
                 ])
+                script {
+                    def commitId = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                    currentBuild.displayName = "${commitId}"
+                }
             }
         }
 
@@ -41,7 +45,6 @@ pipeline {
                         sh 'mvn clean package'
                         def finalName = sh(script: "mvn help:evaluate -Dexpression=project.build.finalName -q -DforceStdout", returnStdout: true).trim()
                         JAR_FILE = "${finalName}.jar"
-                        currentBuild.displayName = JAR_FILE
                     }
                 }
             }
