@@ -4,9 +4,6 @@ import { provideRouter, withHashLocation, withRouterConfig } from '@angular/rout
 import { routes } from './app.routes';
 import { provideHttpClient } from '@angular/common/http';
 import { providePrimeNG } from 'primeng/config';
-// import Aura from '@primeng/themes/aura';
-// import Material from '@primeng/themes/material';
-// import Nora from '@primeng/themes/nora';
 import Lara from '@primeng/themes/lara';
 
 export const appConfig: ApplicationConfig = {
@@ -19,10 +16,11 @@ export const appConfig: ApplicationConfig = {
       withHashLocation()
     ),providePrimeNG({
       theme: {
-        // preset: Aura
-        // preset: Material
-        // preset: Nora
-        preset: Lara
+        preset: Lara,
+        options: {
+          dark: false,
+          automaticDetection: false
+        }
       }
     })
   ]
