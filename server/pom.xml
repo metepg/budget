@@ -65,7 +65,7 @@
     </dependencies>
 
     <build>
-        <finalName>budget</finalName>
+        <finalName>budget-app</finalName>
         <plugins>
             <plugin>
                 <groupId>com.github.eirslett</groupId>
