@@ -69,25 +69,27 @@
         </div>
       }
 
-      <div style="margin-top: 30px">
-        <p-select
-          [options]="formCategories"
-          [style]="{ width: '200px' }"
-          formControlName="category"
-          placeholder="Kategoria"
-          optionLabel="description"
-          optionValue="id">
-        </p-select>
-      </div>
-
-      @if (isControlInvalid('category')) {
-        <div class="alert alert-danger">
-          @if (billFormBuilder.get('category')?.hasError('required')) {
-            <small class="error">Pakollinen</small>
-          } @else if (billFormBuilder.get('category')?.hasError('invalidCategory')) {
-            <small class="error">Jotain meni pieleen</small>
-          }
+      @if (billFormBuilder.get('transactionType')?.value === BillType.EXPENSE) {
+        <div style="margin-top: 30px">
+          <p-select
+            [options]="formCategories"
+            [style]="{ width: '200px' }"
+            formControlName="category"
+            placeholder="Kategoria"
+            optionLabel="description"
+            optionValue="id">
+          </p-select>
         </div>
+
+        @if (isControlInvalid('category')) {
+          <div class="alert alert-danger">
+            @if (billFormBuilder.get('category')?.hasError('required')) {
+              <small class="error">Pakollinen</small>
+            } @else if (billFormBuilder.get('category')?.hasError('invalidCategory')) {
+              <small class="error">Jotain meni pieleen</small>
+            }
+          </div>
+        }
       }
 
       <br>

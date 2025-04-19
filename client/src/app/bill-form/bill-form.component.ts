@@ -30,6 +30,7 @@ interface FormCategory {
   id?: number;
   description: string;
   index: number;
+  color: string;
 }
 
 interface TransactionTypeOption {
@@ -86,6 +87,12 @@ export class BillFormComponent implements OnInit, OnDestroy {
     transactionType: FormControl<BillType | null>;
   }>;
   today: Date = new Date();
+  private incomeCategory: FormCategory = {
+    id: 999,
+    description: 'Tulo',
+    color: 'black',
+    index: 999
+  }
 
   constructor(
     private formBuilder: FormBuilder,
@@ -126,6 +133,12 @@ export class BillFormComponent implements OnInit, OnDestroy {
       )
     });
 
+    this.billFormBuilder.get('transactionType')?.valueChanges.subscribe(value => {
+      if (value === BillType.INCOME) {
+        this.billFormBuilder.patchValue({ category: this.incomeCategory });
+      }
+    });
+
     this.categoryService.getAll().subscribe(categories => {
       this.formCategories = categories.sort((a, b) => a.index - b.index);
 
@@ -153,25 +166,34 @@ export class BillFormComponent implements OnInit, OnDestroy {
     this.submitButtonIsDisabled = true;
     const { amount, date, category, description, transactionType, recurring } = this.billFormBuilder.value;
     this.user = this.localStorageService.getUser();
-    const currentCategory = this.formCategories.find(c => c.id === category);
-    if (!currentCategory) return;
 
+    let selectedCategory: Category | undefined;
+
+    if (transactionType === BillType.INCOME) {
+      selectedCategory = this.incomeCategory;
+    } else {
+      selectedCategory = this.formCategories.find(c => c.id === category);
+      if (!selectedCategory) return;
+    }
+
+    console.log("here")
     if (!this.billFormBuilder.valid || !this.user || !amount || !description || !transactionType || !date) {
       return;
     }
-    if (!this.user.username) return;
+
+    console.log("here2")
     const bill = {
       id: null,
       amount,
       username: this.user.username,
-      category: currentCategory!,
+      category: selectedCategory,
       date: fixDateToFinnishTime(date),
       type: transactionType,
       recurring: recurring!,
       description
     };
 
-    this.incomeService.saveIncome([bill]).subscribe(response => {
+    this.incomeService.saveIncome([bill]).subscribe(_ => {
       this.messageService.add({ severity: 'success', summary: 'Tallennus onnistui', life: 1500 });
       this.budgetService.notifyBudgetChange();
       this.billFormBuilder.reset({

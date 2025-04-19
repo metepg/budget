@@ -38,4 +38,8 @@ export class BillService {
   deleteBill(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
+  getBillsByYear(year: number) {
+    return this.http.get<Bill[]>(`${this.apiUrl}?year=${year}`);
+  }
 }

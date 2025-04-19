@@ -11,6 +11,7 @@
 </p-button>
 
 @if (categories.length > 0) {
+  <div style="overflow: visible; position: relative;">
   <p-orderList
     [responsive]="true"
     [value]="categories"
@@ -25,6 +26,12 @@
           placeholder="Kategorian nimi"
           (keydown)="$event.stopPropagation()"
           (keyup)="$event.stopPropagation()"/>
+        <p-colorPicker
+          [(ngModel)]="category.color"
+          [style]="{ width: '2rem', height: '2rem' }"
+          appendTo="body"
+          (keydown)="$event.stopPropagation()">
+        </p-colorPicker>
         <p-button
           severity="danger"
           rounded="true"
@@ -36,6 +43,7 @@
       </div>
     </ng-template>
   </p-orderList>
+  </div>
 }
 <br/>
 <p-button

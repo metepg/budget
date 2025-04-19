@@ -1,6 +1,7 @@
 package com.metepg.budget.service;
 
 import com.metepg.budget.dto.BillResponseDTO;
+import com.metepg.budget.enums.BillEnum;
 import com.metepg.budget.model.Bill;
 import com.metepg.budget.model.User;
 import com.metepg.budget.repository.BillRepository;
@@ -32,7 +33,7 @@ public class BillService {
                 .collect(Collectors.toList());
     }
 
-    public BillResponseDTO getBill(Integer id) {
+    public BillResponseDTO findBillById(Integer id) {
         Bill bill = billRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Bill not found with id: " + id));
         return new BillResponseDTO(bill);
@@ -81,5 +82,11 @@ public class BillService {
                 .map(BillResponseDTO::new)
                 .collect(Collectors.toList());
     }
+
+    public List<BillResponseDTO> findAllExpensesByYear(Integer year) {
+        return this.billRepository.findAllExpensesByYear(year, BillEnum.EXPENSE)
+                .stream()
+                .map(BillResponseDTO::new)
+                .collect(Collectors.toList());}
 
 }

@@ -56,7 +56,6 @@ export class NavbarComponent implements OnInit {
 
   showTab(view: View) {
     const route = this.routeMap[view] || '';
-    console.log('navigate to', route);
     this.router.navigate([route]);
   }
 

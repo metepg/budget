@@ -1,5 +1,6 @@
 package com.metepg.budget.repository;
 
+import com.metepg.budget.enums.BillEnum;
 import com.metepg.budget.model.Bill;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -45,4 +46,6 @@ public interface BillRepository extends JpaRepository<Bill, Integer> {
 
     List<Bill> findAllByUsernameAndDateBetween(String username, LocalDate startDate, LocalDate endDate);
 
+    @Query("SELECT bill FROM Bill bill WHERE YEAR(bill.date) = :year AND bill.type = :type")
+    List<Bill> findAllExpensesByYear(@Param("year") int year, @Param("type") BillEnum type);
 }

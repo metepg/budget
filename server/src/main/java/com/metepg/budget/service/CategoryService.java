@@ -33,7 +33,8 @@ public class CategoryService {
     }
 
     public List<Category> findAll() {
-        return categoryRepositoryJPA.findAll();
+        return categoryRepositoryJPA.findAll().stream()
+                .filter(c -> c.getId() != 999)
+                .toList();
     }
-
 }

@@ -5,6 +5,8 @@ import com.metepg.budget.model.Bill;
 import com.metepg.budget.service.BillService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,24 +21,31 @@ import java.util.List;
 public class BillController {
 
     private final BillService billService;
+    private static final Logger log = LoggerFactory.getLogger(BillController.class);
 
-    @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<BillResponseDTO> getAllEntries() {
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<BillResponseDTO> findAllByUsername() {
+        log.info("Find all bills by username.");
         return billService.findAllByUsername();
     }
 
     @GetMapping("/{id}")
-    public BillResponseDTO getBill(@PathVariable Integer id) {
-        return billService.getBill(id);
+    public BillResponseDTO findBillById(@PathVariable Integer id) {
+        return billService.findBillById(id);
+    }
+
+    @GetMapping(params = "year")
+    public List<BillResponseDTO> findAllExpensesByYear(@RequestParam Integer year) {
+        return billService.findAllExpensesByYear(year);
     }
 
     @GetMapping(value = "/recurring", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<BillResponseDTO> getAllRecurringEntries() {
+    public List<BillResponseDTO> findAllByUsernameAndRecurringTrue() {
         return billService.findAllByUsernameAndRecurringTrue();
     }
 
     @GetMapping(value = "/not-recurring", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<BillResponseDTO> getAllNotRecurringEntries(@RequestParam(value = "month", required = false) Integer month) {
+    public List<BillResponseDTO> findAllByUsernameAndRecurringFalse(@RequestParam(value = "month", required = false) Integer month) {
         return billService.findAllByUsernameAndRecurringFalse(month);
     }
 

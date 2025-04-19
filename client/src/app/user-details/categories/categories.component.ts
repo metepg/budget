@@ -7,6 +7,7 @@ import { Button } from 'primeng/button';
 import { Category } from '../../../models/Category';
 import { Tooltip } from 'primeng/tooltip';
 import { deepEqual } from '../../../utils/utils';
+import { ColorPicker } from 'primeng/colorpicker';
 
 @Component({
   selector: 'app-categories',
@@ -19,7 +20,8 @@ import { deepEqual } from '../../../utils/utils';
     PrimeTemplate,
     InputText,
     Button,
-    Tooltip
+    Tooltip,
+    ColorPicker
   ],
 })
 
@@ -43,7 +45,7 @@ export class CategoriesComponent implements OnInit, OnChanges {
   }
 
   addCategory() {
-    this.categories = [...this.categories, { index: this.categories.length, description: '', id: undefined }];
+    this.categories = [...this.categories, { index: this.categories.length, color: 'black', description: '', id: undefined }];
   }
 
   onCategoriesReorder(event: any) {
